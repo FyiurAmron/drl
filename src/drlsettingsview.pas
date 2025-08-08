@@ -63,7 +63,7 @@ end;
 
 implementation
 
-uses math, sysutils, vutil, vdebug, vtig, vtigio, vsound,
+uses math, sysutils, vutil, vdebug, vtig, vtigio,
      drlconfiguration, drlbase;
 
 const CStates : array[ TSettingsViewState ] of record Title, ID : Ansistring; end = (

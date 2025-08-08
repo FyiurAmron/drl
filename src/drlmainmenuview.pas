@@ -79,7 +79,7 @@ end;
 implementation
 
 uses math, sysutils,
-     vutil, vtig, vtigstyle, vtigio, vimage, vgltypes, vluasystem, vluavalue, vsound,
+     vutil, vtig, vtigstyle, vtigio, vgltypes, vluasystem, vluavalue, vsound,
      dfhof,
      drlbase, drlgfxio, drlplayerview, drlhelpview, drlsettingsview, drlpagedview;
 
@@ -107,7 +107,7 @@ const MAINMENU_ID = 'mainmenu';
 const CTYPE_ANGEL  = 1;
       CTYPE_DANGEL = 2;
       CTYPE_AANGEL = 3;
-      CTYPE_CUSTOM = 4;
+//      CTYPE_CUSTOM = 4;
 
       CTYPE_SECOND = 10;
 
@@ -260,7 +260,7 @@ const
   TextContinueGame  = '{b--} Continue game {b---}';
   TextNewGame       = '{b-----} New game {b-----}';
   TextChallengeGame = '{b--} Challenge game {b--}';
-  TextJHC           = '{B=}{^ Buy JHC on Steam!}{B=}';
+//  TextJHC           = '{B=}{^ Buy JHC on Steam!}{B=}';
   TextShowHighscore = '{b-} Show highscores {b--}';
   TextShowPlayer    = '{b---} Show player {b----}';
   TextExit          = '{b------} Exit {b--------}';
@@ -425,8 +425,8 @@ begin
 end;
 
 procedure TMainMenuView.UpdateName;
-var iStoreText   : Ansistring;
-    iStoreCancel : Boolean;
+//var iStoreText   : Ansistring;
+//    iStoreCancel : Boolean;
 begin
   VTIG_PushStyle( @TIGStyleFrameless );
   VTIG_Begin( 'mainmenu_name', Point( 34, 4 ), Point(25,18) );
@@ -723,8 +723,8 @@ end;
 procedure TMainMenuView.Render;
 var iIO             : TDRLGFXIO;
     iMin, iMax      : TGLVec2f;
-    iSize, iSz, iTC : TGLVec2f;
-    iImage          : TImage;
+    iSize           : TGLVec2f;
+//  iImage          : TImage;
 begin
   iIO := IO as TDRLGFXIO;
   Assert( iIO <> nil );
@@ -737,7 +737,7 @@ begin
   if ( FMode in [MAINMENU_INTRO,MAINMENU_MENU,MAINMENU_DIFFICULTY,MAINMENU_KLASS,MAINMENU_FAIR,MAINMENU_NAME,MAINMENU_CTYPE] )
     and IO.IsTopLayer( Self ) then
   begin
-    iImage := iIO.Textures.Texture[ FLogoTexture ].Image;
+    //iImage := iIO.Textures.Texture[ FLogoTexture ].Image;
     iMin.Y  := Floor(iSize.Y / 25) * (-8);
     if (FMode <> MAINMENU_INTRO)
       then begin iMax.Y  := Floor(iSize.Y / 25) * 24; iMin.Y := Floor(iSize.Y / 25) * (-10); end

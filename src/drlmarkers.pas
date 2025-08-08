@@ -10,8 +10,8 @@ uses classes, vutil, vnode, vrltools, vgenerics, dfdata;
 
 type TMarker = class( TVObject )
   constructor Create;
-private
   constructor CreateFromStream( aStream: TStream ); override;
+private
   procedure WriteToStream( aStream: TStream ); override;
 private
   FSprite : TSprite;
@@ -42,7 +42,7 @@ end;
 
 implementation
 
-uses sysutils, vuid;
+uses sysutils;
 
 constructor TMarker.Create;
 begin
