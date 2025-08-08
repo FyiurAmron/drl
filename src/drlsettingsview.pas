@@ -305,7 +305,7 @@ begin
                     begin
                       IO.Audio.Reconfigure;
                       if iEntry.ID = 'sound_volume' then
-                         Sound.PlaySample('menu.change');
+                         IO.Audio.PlaySound('menu.change');
                     end;
                     if FState = SETTINGSVIEW_DISPLAY then
                     begin

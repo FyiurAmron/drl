@@ -188,7 +188,7 @@ procedure EmitCrashInfo( const aInfo : AnsiString; aInGame : Boolean  );
 implementation
 
 uses math, video, dateutils, variants,
-     vsound, vluasystem, vuid, vlog, vdebug, vuiconsole, vmath,
+     vluasystem, vuid, vlog, vdebug, vuiconsole, vmath,
      vsdlio, vglconsole, vtig, vtigio, vvector,
      dflevel, dfplayer, dfitem, dfbeing, dfhof,
      drlconfiguration, drlbase, drlmoreview, drlchoiceview, drlua, drlmodulechoiceview,
@@ -1104,8 +1104,6 @@ var iLayer  : TInterfaceLayer;
   end;
 
 begin
-  if Assigned( Sound ) then
-    Sound.Update;
   if Assigned( DRL ) then
     //DRL.Store.Update;
 

@@ -39,6 +39,7 @@ type TDRLAudio = class
   procedure Load;
   procedure Update( aMSec : DWord );
   procedure PlaySound( aSoundID : Word; aCoord : TCoord2D; aDelay : DWord = 0 );
+  procedure PlaySound( const mID : Ansistring );
   procedure PlayMusic( const MusicID : Ansistring; aNotFound : Boolean = False );
   procedure PlayMusicOnce( const MusicID : Ansistring );
   function ResolveSoundID( const ResolveIDs: array of AnsiString ) : Word;
@@ -53,7 +54,6 @@ private
   FTime        : QWord;
   FSoundEvents : TSoundEventHeap;
   FCurrentData : TVDataFile;
-
 
   FAudioRegistry : TAudioRegistry;
   FMusicCount    : DWord;
@@ -122,6 +122,7 @@ end;
 procedure TDRLAudio.Update( aMSec : DWord );
 var iSoundEvent : TSoundEvent;
 begin
+  if Sound <> Nil then Sound.Update;
   FTime += aMSec;
   while (not FSoundEvents.isEmpty) and (FSoundEvents.Top.Time <= FTime) do
   begin
@@ -301,6 +302,11 @@ begin
     FAudioRegistry.Push( iEntry );
     FAudioLookup[ aID ] := iIndex;
   end;
+end;
+
+procedure TDoomAudio.PlaySound( const mID: Ansistring );
+begin
+  Sound.PlaySample( mID );
 end;
 
 procedure TDRLAudio.PlaySound( aSoundID : Word; aCoord : TCoord2D; aDelay : DWord = 0 );
