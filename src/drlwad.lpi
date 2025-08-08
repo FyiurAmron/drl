@@ -47,7 +47,7 @@
       <Filename Value="..\bin\drlwad"/>
     </Target>
     <SearchPaths>
-      <OtherUnitFiles Value="..\..\fpcvalkyrie\src;..\..\fpcvalkyrie\lua"/>
+      <OtherUnitFiles Value="fpcvalkyrie\src;fpcvalkyrie\lua"/>
       <UnitOutputDirectory Value="../tmp"/>
     </SearchPaths>
     <Parsing>

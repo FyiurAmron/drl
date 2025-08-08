@@ -57,7 +57,7 @@
       <Filename Value="..\bin\makewad"/>
     </Target>
     <SearchPaths>
-      <OtherUnitFiles Value="..\..\fpcvalkyrie\src;..\..\fpcvalkyrie\libs"/>
+      <OtherUnitFiles Value="fpcvalkyrie\src;fpcvalkyrie\libs"/>
       <UnitOutputDirectory Value="..\tmp"/>
     </SearchPaths>
     <Parsing>

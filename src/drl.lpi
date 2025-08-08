@@ -45,7 +45,7 @@
         </Mode0>
       </Modes>
     </RunParams>
-    <Units Count="51">
+    <Units Count="55">
       <Unit0>
         <Filename Value="drl.pas"/>
         <IsPartOfProject Value="True"/>
@@ -250,6 +250,22 @@
         <Filename Value="drlmodulechoiceview.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit50>
+      <Unit51>
+        <Filename Value="fpcvalkyrie\src\vparams.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="fpcvalkyrie\src\valkyrie.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="fpcvalkyrie\src\vsound.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="callbacks.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit54>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -259,8 +275,8 @@
       <Filename Value="..\bin\drl"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="..\bin;..\..\fpcvalkyrie\libs;..\..\fpcvalkyrie\src;$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\..\fpcvalkyrie\libs;..\..\fpcvalkyrie\src"/>
+      <IncludeFiles Value="..\bin;fpcvalkyrie\libs;fpcvalkyrie\src;$(ProjOutDir)"/>
+      <OtherUnitFiles Value="fpcvalkyrie\libs;fpcvalkyrie\src"/>
       <UnitOutputDirectory Value="..\tmp"/>
     </SearchPaths>
     <Parsing>
