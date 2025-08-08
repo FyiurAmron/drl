@@ -864,8 +864,8 @@ begin
   iState.Init(L);
   if (iState.ToObject(1) as TPlayer) = nil then Exit(0);
   iID := iState.ToString(2);
-  if DRL.Store.SetAchievement( iID ) then
-    Log( LOGINFO, 'lua: set_achievement('+iID+') succeeded!');
+  //if DRL.Store.SetAchievement( iID ) then
+    //Log( LOGINFO, 'lua: set_achievement('+iID+') succeeded!');
   Result := 0;
 end;
 
@@ -877,8 +877,8 @@ begin
   iState.Init(L);
   if (iState.ToObject(1) as TPlayer) = nil then Exit(0);
   iID := iState.ToString(2);
-  if DRL.Store.IncStat( iID ) then
-    Log( LOGINFO, 'lua: store_inc_stat('+iID+') succeeded!');
+//  if DRL.Store.IncStat( iID ) then
+//    Log( LOGINFO, 'lua: store_inc_stat('+iID+') succeeded!');
   Result := 0;
 end;
 
@@ -890,8 +890,8 @@ begin
   iState.Init(L);
   if (iState.ToObject(1) as TPlayer) = nil then Exit(0);
   iID := iState.ToString(2);
-  if DRL.Store.MarkStat( iID ) then
-    Log( LOGINFO, 'lua: store_mark_stat('+iID+') succeeded!');
+//  if DRL.Store.MarkStat( iID ) then
+//    Log( LOGINFO, 'lua: store_mark_stat('+iID+') succeeded!');
   Result := 0;
 end;
 

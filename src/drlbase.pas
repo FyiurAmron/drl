@@ -7,7 +7,7 @@ Copyright (c) 2002-2025 by Kornel Kisielewicz
 unit drlbase;
 interface
 
-uses vnode, vutil, vuid, vrltools, vluasystem, vioevent, vstoreinterface,
+uses vnode, vutil, vuid, vrltools, vluasystem, vioevent,
      dflevel, dfdata, dfhof, dfitem,
      drlhooks, drlua, drlcommand, drlkeybindings, drlmodule;
 
@@ -74,7 +74,7 @@ TDRL = class(TVObject)
        procedure LoadChallenge;
        procedure SetState( aNewState : TDRLState );
        procedure ClearPlayerView;
-       procedure OpenJHCPage;
+       // procedure OpenJHCPage;
      private
        procedure ResetAutoTarget;
        function HandleMouseEvent( aEvent : TIOEvent ) : Boolean;
@@ -98,11 +98,11 @@ TDRL = class(TVObject)
        FPlayerView      : TInterfaceLayer;
        FPadMoveActive   : Boolean;
        FPadMoveNext     : QWord;
-       FStore           : TStoreInterface;
+       // FStore           : TStoreInterface;
        FPadMoved        : Boolean;
        FModules         : TDRLModules;
      public
-       property Store : TStoreInterface read FStore;
+       // property Store : TStoreInterface read FStore;
        property Modules : TDRLModules read FModules;
        property Level : TLevel read FLevel;
        property ChalHooks : TFlags read FChallengeHooks;
@@ -235,6 +235,7 @@ begin
   FPlayerView := nil;
 end;
 
+{
 procedure TDRL.OpenJHCPage;
 const JHCURL      = 'https://store.steampowered.com/app/3126530/Jupiter_Hell_Classic/';
       JHCSTEAMURL = 'steam://store/3126530';
@@ -258,6 +259,7 @@ begin
     ShellExecute(0, 'open', PChar(iURL), nil, nil, SW_SHOWNORMAL); // Windows
   {$ENDIF}
 end;
+}
 
 procedure TDRL.LoadModule( Base : Boolean );
 begin
@@ -340,7 +342,7 @@ constructor TDRL.Create;
 begin
   FTargeting := TTargeting.Create;
   Reset;
-  FStore     := TStoreInterface.Get;
+  //FStore     := TStoreInterface.Get;
   Log( VersionToString( ArrayToVersion(VERSION_ARRAY) ) );
   Reconfigure;
   if GraphicsVersion

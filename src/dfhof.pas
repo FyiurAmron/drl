@@ -993,8 +993,8 @@ begin
       then aResult.Data[i].Value := 0
       else begin
         aResult.Data[i].Value := iValues[i];
-        if DRL.Store.IsInitialized then
-          HandleAchievements( aResult.Data[i].ID, iValues[i] );
+//        if DRL.Store.IsInitialized then
+//          HandleAchievements( aResult.Data[i].ID, iValues[i] );
         RankCheck := True;
       end;
     SetRank(aResult.Data[i].ID,iValues[i]);
@@ -1099,16 +1099,18 @@ begin
 end;
 
 procedure THOF.HandleAchievements( const aRankArray : Ansistring; aRankLevel : Integer );
-var i    : Integer;
-    iAch : AnsiString;
+//var i    : Integer;
+//    iAch : AnsiString;
 begin
+  {
   for i := 1 to aRankLevel do
   begin
     iAch := LuaSystem.Get( [ 'ranks', aRankArray, aRankLevel+1, 'achievement' ], '' );
-    if iAch <> '' then
-        if DRL.Store.SetAchievement( iAch ) then
-          Log( LOGINFO, iAch+' awarded!');
+    //if iAch <> '' then
+        //if DRL.Store.SetAchievement( iAch ) then
+          //Log( LOGINFO, iAch+' awarded!');
   end;
+  }
 end;
 
 end.

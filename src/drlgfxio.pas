@@ -316,7 +316,7 @@ var iCoreData   : TVDataFile;
     iFontName   : Ansistring;
     iFontFormat : Ansistring;
 begin
-  FGPDetected := DRL.Store.IsSteamDeck;
+  // FGPDetected := DRL.Store.IsSteamDeck;
   if Option_ForceRaw then
   begin
     iFontFormat := ReadFileString( 'data' + DirectorySeparator + CoreModuleID + DirectorySeparator + 'fonts' + DirectorySeparator + 'default' );
@@ -387,7 +387,7 @@ begin
     RecalculateScaling( False );
   DeviceChanged;
   TGLConsoleRenderer( FConsole ).HideCursor;
-  TSDLIODriver(FIODriver).GamePadSupport := DRL.Store.IsSteamDeck or Configuration.GetBoolean( 'enable_gamepad' );
+  TSDLIODriver(FIODriver).GamePadSupport := { DRL.Store.IsSteamDeck or } Configuration.GetBoolean( 'enable_gamepad' );
 
   inherited Reconfigure(aConfig);
 end;

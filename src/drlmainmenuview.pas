@@ -231,8 +231,8 @@ begin
             IO.Root.Console.ShowCursor;
             FName[0] := #0;
             IO.Driver.StartTextInput;
-            if IO.IsGamepad then
-              DRL.Store.StartText( 'Enter name', 30 );
+            //if IO.IsGamepad then
+              //DRL.Store.StartText( 'Enter name', 30 );
             FMode := MAINMENU_NAME;
           end;
       end;
@@ -315,11 +315,11 @@ begin
     if VTIG_Selectable( TextShowPlayer )    then IO.PushLayer( TPagedView.Create( HOF.GetPagedPlayerReport ) );
     if VTIG_Selectable( TextHelp )          then IO.PushLayer( THelpView.Create );
     if VTIG_Selectable( TextSettings )      then IO.PushLayer( TSettingsView.Create );
-    if FJHCLink then
-    begin
-      if VTIG_Selectable( TextJHC ) then
-        DRL.OpenJHCPage;
-    end;
+    //if FJHCLink then
+    //begin
+      //if VTIG_Selectable( TextJHC ) then
+        //DRL.OpenJHCPage;
+    //end;
     if VTIG_Selectable( TextExit ) then
     begin
       FResult.Quit := True;
@@ -341,7 +341,7 @@ begin
 
   if ForceShop then
   begin
-    DRL.OpenJHCPage;
+    //DRL.OpenJHCPage;
     ForceShop := False;
   end;
 
@@ -374,9 +374,9 @@ begin
     VTIG_Text('Save game version : {!'+SaveVersionModule+'}' );
     VTIG_Text('This game version : {!'+VersionModuleSave+'}' );
     VTIG_Text('');
-    if DRL.Store.IsSteam
-      then VTIG_Text('You can try to download the direct previous version from {!Steam} Betas tab and finish the game, or delete the save file now.')
-      else VTIG_Text('You can try downloading the previous version from the web and finish the game, or delete the save file now.');
+    //if DRL.Store.IsSteam
+      //then VTIG_Text('You can try to download the direct previous version from {!Steam} Betas tab and finish the game, or delete the save file now.')
+      //else VTIG_Text('You can try downloading the previous version from the web and finish the game, or delete the save file now.');
   end
   else
   begin
@@ -440,6 +440,7 @@ begin
     IO.Root.Console.HideCursor;
     FMode := MAINMENU_DONE;
   end;
+  {
   if DRL.Store.GetText( iStoreText, @iStoreCancel ) then
   begin
     IO.Driver.StopTextInput;
@@ -455,6 +456,7 @@ begin
       FMode := MAINMENU_DONE;
     end;
   end;
+  }
   VTIG_PopStyle;
   VTIG_End();
   IO.RenderUIBackground( Point(22,17), Point(58,21), 0.7 );

@@ -1107,7 +1107,7 @@ begin
   if Assigned( Sound ) then
     Sound.Update;
   if Assigned( DRL ) then
-    DRL.Store.Update;
+    //DRL.Store.Update;
 
   if FUIMouse <> FUIMouseLast then
   begin
