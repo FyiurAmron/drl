@@ -30,11 +30,6 @@ uses SysUtils,
 var Handle : HWND;
     Title  : AnsiString;
 
-function ConsoleEventProc(CtrlType: DWORD): Bool; stdcall;
-begin
-  Result := True;
-end;
-
 {$R *.res}
 
 {$ENDIF}
