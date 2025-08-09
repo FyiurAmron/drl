@@ -1,4 +1,5 @@
 * move audio to callbacks
+    - handle music via callbacks: DONE
 * refactor to not use "WAD"s
 * move logging to callbacks
 * move GFX to callbacks

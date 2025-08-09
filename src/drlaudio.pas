@@ -1,4 +1,5 @@
 {$INCLUDE drl.inc}
+{$DEFINE DISABLE_MUSIC}
 {
  ----------------------------------------------------
 Copyright (c) 2002-2025 by Kornel Kisielewicz
@@ -6,7 +7,8 @@ Copyright (c) 2002-2025 by Kornel Kisielewicz
 }
 unit drlaudio;
 interface
-uses classes, vgenerics, vrltools, vluaconfig, vdf;
+uses classes, vgenerics, vrltools, vluaconfig, vdf,
+     callbacks;
 
 type TSoundEvent = packed record
        Time    : QWord;
@@ -303,7 +305,7 @@ begin
   end;
 end;
 
-procedure TDoomAudio.PlaySound( const mID: Ansistring );
+procedure TDRLAudio.PlaySound( const mID: Ansistring );
 begin
   Sound.PlaySample( mID );
 end;
@@ -360,8 +362,9 @@ end;
 
 procedure TDRLAudio.PlayMusic(const MusicID : Ansistring; aNotFound : Boolean = False );
 begin
-  FAudioCallback( PChar('PlayMusic(' + MusicID + ')') );
+  INTEROP( CB_MUSIC, MusicID );
   FLastMusic := MusicID;
+  {$IFNDEF DISABLE_MUSIC}
   if (not SoundVersion) or (not Option_Music) or ( Setting_MusicVolume = 0 ) then Exit;
   try
     if MusicID = '' then Sound.Silence;
@@ -378,6 +381,7 @@ begin
       IO.Msg( 'PlayMusic raised exception: ' + e.message );
     end;
   end;
+  {$ENDIF}
 end;
 
 destructor TDRLAudio.Destroy;
