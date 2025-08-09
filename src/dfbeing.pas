@@ -1104,13 +1104,10 @@ var iVisualTime : Integer;
     iMoveCost   : Integer;
 begin
   iMoveCost := getMoveCost;
-  if GraphicsVersion then
-  begin
-    iVisualTime := Ceil( VisualTime( iMoveCost, AnimationSpeedMove ) * aVisualMultiplier );
-    if isPlayer then
-      IO.addScreenMoveAnimation( iVisualTime, aTarget );
-    IO.addMoveAnimation( iVisualTime, 0, FUID, Position, aTarget, Sprite, True );
-  end;
+  iVisualTime := Ceil( VisualTime( iMoveCost, AnimationSpeedMove ) * aVisualMultiplier );
+  if isPlayer then
+    IO.addScreenMoveAnimation( iVisualTime, aTarget );
+  IO.addMoveAnimation( iVisualTime, 0, FUID, Position, aTarget, Sprite, True );
   Displace( aTarget );
   Dec( FSpeedCount, iMoveCost );
   HandlePostDisplace;
@@ -1251,12 +1248,11 @@ begin
 
   iMoveCost   := getMoveCost;
   FSpeedCount := FSpeedCount - iMoveCost;
-  if GraphicsVersion then
-    if iLevel.AnimationVisible( FPosition, Self ) or iLevel.AnimationVisible( LastMove, Self ) then
-    begin
-      iVisualMult := ( 100.0 / FSpeed ) * ( iMoveCost / 1000.0 ) * aVisualMultiplier;
-      IO.addMoveAnimation( Ceil( iVisualMult * 100 ), 0, FUID,Position,LastMove,Sprite, True);
-    end;
+  if iLevel.AnimationVisible( FPosition, Self ) or iLevel.AnimationVisible( LastMove, Self ) then
+  begin
+    iVisualMult := ( 100.0 / FSpeed ) * ( iMoveCost / 1000.0 ) * aVisualMultiplier;
+    IO.addMoveAnimation( Ceil( iVisualMult * 100 ), 0, FUID,Position,LastMove,Sprite, True);
+  end;
   Displace( FMovePos );
   if BF_WALKSOUND in FFlags then
     PlaySound( 'hoof' );
@@ -2361,15 +2357,12 @@ begin
 
   if iLevel.isEmpty(iKnock,[EF_NOBEINGS,EF_NOBLOCK]) then
   begin
-    if GraphicsVersion then
-    begin
-      if isPlayer then
-        IO.addScreenMoveAnimation(100, iKnock );
-      if iLevel.AnimationVisible( FPosition, Self ) or iLevel.AnimationVisible( iKnock, Self ) then
-        IO.addMoveAnimation(100,0,FUID,Position,iKnock,Sprite,True);
-      if isPlayer then
-        IO.addScreenShakeAnimation( 400, 0, Clampf( aStrength * 1.0, 2.0, 10.0 ) );
-    end;
+    if isPlayer then
+      IO.addScreenMoveAnimation(100, iKnock );
+    if iLevel.AnimationVisible( FPosition, Self ) or iLevel.AnimationVisible( iKnock, Self ) then
+      IO.addMoveAnimation(100,0,FUID,Position,iKnock,Sprite,True);
+    if isPlayer then
+      IO.addScreenShakeAnimation( 400, 0, Clampf( aStrength * 1.0, 2.0, 10.0 ) );
     Displace( iKnock );
     HandlePostDisplace;
   end;
@@ -3004,10 +2997,9 @@ begin
   Thing := State.ToObject(1) as TThing;
   if State.IsNil(2) then Exit(0);
   Target := State.ToCoord(2);
-  if GraphicsVersion then
-    if Thing is TBeing then
-      if Thing is TPlayer then
-        IO.addScreenMoveAnimation(Distance(Thing.Position,Target)*10,Target);
+  if Thing is TBeing then
+    if Thing is TPlayer then
+      IO.addScreenMoveAnimation(Distance(Thing.Position,Target)*10,Target);
   Thing.Displace(Target);
   Result := 0;
 end;

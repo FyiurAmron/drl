@@ -383,10 +383,6 @@ begin
       IO.ClearEventBuffer;
     end
     else
-    begin
-      if not GraphicsVersion then
-        IO.Delay( Option_RunDelay );
-    end;
   end;
 
   CallHook(Hook_OnPreAction,[]);

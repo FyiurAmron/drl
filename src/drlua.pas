@@ -285,7 +285,6 @@ var State    : TDRLLuaState;
     iTexture : TTexture;
 begin
   State.Init(L);
-  if not GraphicsVersion then Exit( 0 );
   iTexture := (IO as TDRLGFXIO).Textures.Textures[ State.ToString(1) ];
   if iTexture = nil then State.Error( 'Texture not found: '+State.ToString(1) );
   if State.IsBoolean( 2 ) and State.ToBoolean( 2 ) then iTexture.Blend := True;
@@ -315,12 +314,6 @@ var State     : TDRLLuaState;
 
 begin
   State.Init(L);
-  if not GraphicsVersion then
-  begin
-    Inc( SpriteSheetCounter );
-    State.Push( Integer( SpriteSheetCounter * 100000 ) );
-    Exit( 1 );
-  end;
   iNormal   := LoadTexture( 1 );
   iCosplay  := LoadTexture( 2 );
   iGlow     := LoadTexture( 3 );
@@ -363,11 +356,8 @@ begin
       iData.Load('help');
       iData.RegisterLoader( FILETYPE_RAW, @IO.ASCIILoader );
       iData.Load('ascii');
-      if GraphicsVersion then
-      begin
-        iData.RegisterLoader(FILETYPE_IMAGE ,@((IO as TDRLGFXIO).Textures.LoadTextureCallback));
-        iData.Load('graphics');
-      end;
+      iData.RegisterLoader(FILETYPE_IMAGE ,@((IO as TDRLGFXIO).Textures.LoadTextureCallback));
+      iData.Load('graphics');
       IO.Audio.LoadBindingDataFile( iData, 'audio.lua', DataPath );
       FOpenData.Push( iData );
     end
@@ -380,8 +370,7 @@ begin
       end;
       LoadFiles( iModule.Path + 'help', @Help.StreamLoader, '*.hlp' );
       LoadFiles( iModule.Path + 'ascii', @IO.ASCIILoader, '*.asc' );
-      if GraphicsVersion then
-        (IO as TDRLGFXIO).Textures.LoadTextureFolder( iModule.Path + 'graphics' );
+      (IO as TDRLGFXIO).Textures.LoadTextureFolder( iModule.Path + 'graphics' );
       // temporary hack, remove once drllq and drlhq are modules
       IO.Audio.LoadBindingFile( iModule.Path + 'audio.lua', iModule.Path );
     end;
@@ -391,7 +380,6 @@ begin
   IO.Audio.Load;
   VersionModule     := LuaSystem.Get( 'VERSION_MODULE' );
   VersionModuleSave := LuaSystem.Get( 'VERSION_MODULE_SAVE' );
-  DemoVersion       := LuaSystem.Get( 'DEMO', False );
 
   ModuleOption_KlassAchievements := LuaSystem.Get( ['core','options','klass_achievements'], False );
   ModuleOption_NewMenu           := LuaSystem.Get( ['core','options','new_menu'], False );
@@ -515,7 +503,6 @@ begin
   SetValue('VERSION', VERSION_STRING);
   SetValue('VERSION_STRING', VERSION_STRING);
   SetValue('VERSION_BETA',   VERSION_BETA);
-  SetValue('GRAPHICSVERSION',GraphicsVersion);
 
   for Count := 0 to 15 do SetValue(ColorNames[Count],Count);
   TDRLIO.RegisterLuaAPI( State );

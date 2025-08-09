@@ -107,7 +107,7 @@ begin
 
   iOldMusic := Setting_MusicVolume;
 
-  Setting_MenuSound        := Configuration.GetBoolean( 'menu_sound' );
+  //Setting_MenuSound        := Configuration.GetBoolean( 'menu_sound' );
   Setting_MusicVolume      := Configuration.GetInteger( 'music_volume' );
   Setting_SoundVolume      := Configuration.GetInteger( 'sound_volume' );
 
@@ -135,7 +135,7 @@ end;
 procedure TDRLAudio.Configure ( aConfig : TLuaConfig; aReload : Boolean ) ;
 begin
   FSoundEvents.Clear;
-  if SoundVersion and (Option_SoundEngine <> 'NONE') then
+  if (Option_SoundEngine <> 'NONE') then
   begin
     if Option_Music or Option_Sound then
     begin
@@ -318,7 +318,7 @@ var iVolume     : Byte;
     iSoundEvent : TSoundEvent;
 begin
   if aSoundID = 0 then Exit;
-  if (not SoundVersion) or (not Option_Sound) or SoundOff or ( Setting_SoundVolume = 0 ) then Exit;
+  if (not Option_Sound) or SoundOff or ( Setting_SoundVolume = 0 ) then Exit;
   if aDelay > 0 then
   begin
     iSoundEvent.Coord   := aCoord;
@@ -344,7 +344,7 @@ end;
 function TDRLAudio.ResolveSoundID(const ResolveIDs: array of AnsiString): Word;
 var c : DWord;
 begin
-  if (not SoundVersion) or (not Option_Sound) or SoundOff then Exit(0);
+  if (not Option_Sound) or SoundOff then Exit(0);
   for c := Low(ResolveIDs) to High(ResolveIDs) do
     if ResolveIDs[c] <> '' then
     begin
@@ -356,7 +356,7 @@ end;
 
 function TDRLAudio.GetSampleID( const aID: AnsiString ) : Word;
 begin
-  if (not SoundVersion) or (not Option_Sound) or SoundOff then Exit(0);
+  if (not Option_Sound) or SoundOff then Exit(0);
   Exit( Sound.GetSampleID( aID ) );
 end;
 
@@ -365,7 +365,7 @@ begin
   INTEROP( CB_MUSIC, MusicID );
   FLastMusic := MusicID;
   {$IFNDEF DISABLE_MUSIC}
-  if (not SoundVersion) or (not Option_Music) or ( Setting_MusicVolume = 0 ) then Exit;
+  if (not Option_Music) or ( Setting_MusicVolume = 0 ) then Exit;
   try
     if MusicID = '' then Sound.Silence;
     if MusicOff then Exit;

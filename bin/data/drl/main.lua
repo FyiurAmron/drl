@@ -114,15 +114,11 @@ function drl.OnLoad()
 	ui.set_style_color( VTIG_SELECTED_TEXT_COLOR, YELLOW )
 	ui.set_style_color( VTIG_SCROLL_COLOR, YELLOW )
 
-	if GRAPHICSVERSION then
-		ui.set_style_color( VTIG_BACKGROUND_COLOR, { 16, 0, 0, 0 } )
-		ui.set_style_color( VTIG_SELECTED_BACKGROUND_COLOR, { 68, 34, 34, 255 } )
-		ui.set_style_color( VTIG_INPUT_TEXT_COLOR, LIGHTGRAY )
-		ui.set_style_color( VTIG_INPUT_BACKGROUND_COLOR, {68, 34, 34, 255} )
-	else
-		ui.set_style_color( VTIG_SELECTED_BACKGROUND_COLOR, DARKGRAY )
-		ui.set_style_color( VTIG_SELECTED_DISABLED_COLOR, BLACK )
-	end
+	ui.set_style_color( VTIG_BACKGROUND_COLOR, { 16, 0, 0, 0 } )
+	ui.set_style_color( VTIG_SELECTED_BACKGROUND_COLOR, { 68, 34, 34, 255 } )
+	ui.set_style_color( VTIG_INPUT_TEXT_COLOR, LIGHTGRAY )
+	ui.set_style_color( VTIG_INPUT_BACKGROUND_COLOR, {68, 34, 34, 255} )
+
 	ui.update_styles()
 end
 

@@ -98,11 +98,9 @@ TDRL = class(TVObject)
        FPlayerView      : TInterfaceLayer;
        FPadMoveActive   : Boolean;
        FPadMoveNext     : QWord;
-       // FStore           : TStoreInterface;
        FPadMoved        : Boolean;
        FModules         : TDRLModules;
      public
-       // property Store : TStoreInterface read FStore;
        property Modules : TDRLModules read FModules;
        property Level : TLevel read FLevel;
        property ChalHooks : TFlags read FChallengeHooks;
@@ -235,32 +233,6 @@ begin
   FPlayerView := nil;
 end;
 
-{
-procedure TDRL.OpenJHCPage;
-const JHCURL      = 'https://store.steampowered.com/app/3126530/Jupiter_Hell_Classic/';
-      JHCSTEAMURL = 'steam://store/3126530';
-      JHCID       = 3126530;
-var iSteam : Boolean;
-    iURL   : Ansistring;
-begin
-  iSteam := DemoVersion and FStore.IsInitialized;
-  if iSteam and FStore.IsOverlayEnabled then
-  begin
-    FStore.OpenStorePage( JHCID );
-    Exit;
-  end;
-  if iSteam
-    then iURL := JHCSTEAMURL
-    else iURL := JHCURL;
-  {$IFDEF UNIX}
-  fpSystem('xdg-open ' + iURL); // Unix-based systems
-  {$ENDIF}
-  {$IFDEF WINDOWS}
-    ShellExecute(0, 'open', PChar(iURL), nil, nil, SW_SHOWNORMAL); // Windows
-  {$ENDIF}
-end;
-}
-
 procedure TDRL.LoadModule( Base : Boolean );
 begin
 //  if ModuleID <> 'drl' then Lua.LoadModule( Module );
@@ -288,21 +260,17 @@ begin
   iLua := TDRLLua.Create();
   LuaSystem := iLua;
   LuaSystem.CallDefaultResult := True;
-//  Modules.RegisterAwards( LuaSystem.Raw );
   FCoreHooks := LoadHooks( [ 'core' ] ) * GlobalHooks;
 
   LoadModule( True );
   Reconfigure;
 
-  if GraphicsVersion then
-    (IO as TDRLGFXIO).Textures.Upload;
+  (IO as TDRLGFXIO).Textures.Upload;
 
   if GodMode and FileExists( WritePath + 'god.lua') then
     Lua.LoadFile( WritePath + 'god.lua');
   HOF.Init;
   FLevel := TLevel.Create;
-  if not GraphicsVersion then
-    (IO as TDRLTextIO).SetTextMap( FLevel );
 
   HARDSPRITE_HIGHLIGHT := Lua.Get( 'HARDSPRITE_HIGHLIGHT' );
   HARDSPRITE_EXPL      := Lua.Get( 'HARDSPRITE_EXPL' );
@@ -342,12 +310,9 @@ constructor TDRL.Create;
 begin
   FTargeting := TTargeting.Create;
   Reset;
-  //FStore     := TStoreInterface.Get;
   Log( VersionToString( ArrayToVersion(VERSION_ARRAY) ) );
   Reconfigure;
-  if GraphicsVersion
-    then IO := TDRLGFXIO.Create
-    else IO := TDRLTextIO.Create;
+  IO := TDRLGFXIO.Create;
 
   FModules := TDRLModules.Create;
   FModules.ScanModules;
@@ -429,19 +394,6 @@ begin
   Challenge      := aResult.Challenge;
   ArchAngel      := aResult.ArchAngel;
   SChallenge     := aResult.SChallenge;
-
-  {
-  if aResult.Module <> nil then
-  begin
-    NoPlayerRecord := True;
-    NoScoreRecord  := True;
-    Module := aResult.Module;
-  end;
-  }
-
-  // Set Klass   Klass      : Byte;
-  // Upgrade trait -- Trait : Byte;
-  // Set Name    Name       : AnsiString;
 end;
 
 procedure TDRL.PreAction;
@@ -451,8 +403,7 @@ begin
   IO.PreAction;
   IO.Focus( Player.Position );
   Player.UpdateVisual;
-  if GraphicsVersion then
-    (IO as TDRLGFXIO).UpdateMinimap;
+  (IO as TDRLGFXIO).UpdateMinimap;
   Player.PreAction;
   FTargeting.Update( Player.Vision );
   IO.SetAutoTarget( FTargeting.List.Current );
@@ -1160,7 +1111,7 @@ begin
 
       INPUT_EXAMINENPC   : begin Player.ExamineNPC; Exit; end;
       INPUT_EXAMINEITEM  : begin Player.ExamineItem; Exit; end;
-      INPUT_TOGGLEGRID   : begin if GraphicsVersion then SpriteMap.ToggleGrid; Exit; end;
+      INPUT_TOGGLEGRID   : begin SpriteMap.ToggleGrid; Exit; end;
       INPUT_SOUNDTOGGLE  : begin SoundOff := not SoundOff; Exit; end;
       INPUT_MUSICTOGGLE  : begin
                                MusicOff := not MusicOff;
@@ -1556,8 +1507,6 @@ begin
       end;
     end;
   end;
-  if not GraphicsVersion then
-    (IO as TDRLTextIO).SetTextMap( FLevel );
 end;
 
 // TODO: cleanup and remove
@@ -1614,8 +1563,6 @@ begin
 
   FreeAndNil( Stream );
   FLevel.Clear;
-  if ForceShop then
-    CopyFileSimple( ModuleUserPath + 'save', ModuleUserPath + 'savedemo' );
 end;
 
 function TDRL.SaveExists : Boolean;

@@ -69,13 +69,6 @@ begin
   Option_MaxWait          := Configure('MaxWait',Option_MaxWait);
   Option_ForceRaw         := Configure('ForceRaw',GodMode);
 
-  if ForceNoAudio then
-  begin
-    Option_Sound := False;
-    Option_Music := False;
-    Option_SoundEngine := 'NONE';
-  end;
-
   if (not Option_Music) and (not Option_Sound) then Option_SoundEngine := 'NONE';
   if Option_SoundEngine = 'DEFAULT' then
      Option_SoundEngine := {$IFDEF WINDOWS}'FMOD'{$ELSE}'SDL'{$ENDIF};
@@ -85,26 +78,12 @@ begin
   begin
     Option_Music     := False;
     Option_Sound     := False;
-    SoundVersion     := False;
   end
   else
-    SoundVersion     := True;
 
-  // synchro
-  if ForceConsole or ForceGraphics then
-  begin
-    if ForceConsole
-      then Option_Graphics := 'CONSOLE'
-      else Option_Graphics := 'TILES';
-    GraphicsVersion := not ForceConsole;
-  end
-  else
   begin
     if (Option_Graphics <> 'TILES') and (Option_Graphics <> 'CONSOLE') then
       Option_Graphics := 'TILES';
-    if Option_Graphics = 'TILES'
-      then GraphicsVersion := True
-      else GraphicsVersion := False;
   end;
 
   TDRLIO.RegisterLuaAPI( State );

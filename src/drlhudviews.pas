@@ -151,7 +151,7 @@ begin
     Exit( True );
   end;
 
-  if (aInput = INPUT_TOGGLEGRID) and GraphicsVersion then SpriteMap.ToggleGrid;
+  if (aInput = INPUT_TOGGLEGRID) then SpriteMap.ToggleGrid;
   if aInput in [ INPUT_MMOVE, INPUT_MRIGHT, INPUT_MLEFT ] then FTarget := IO.MTarget;
   iLevel := DRL.Level;
   if aInput <> INPUT_MORE then
@@ -350,7 +350,7 @@ begin
     Exit( True );
   end;
 
-  if (aInput = INPUT_TOGGLEGRID) and GraphicsVersion then SpriteMap.ToggleGrid;
+  if (aInput = INPUT_TOGGLEGRID) then SpriteMap.ToggleGrid;
   if aInput = INPUT_TARGETNEXT then
   begin
     FTarget := FTargets.Next;

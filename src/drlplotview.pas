@@ -39,7 +39,7 @@ begin
   FColor     := aColor;
   FBoost     := False;
   FBGTexture := 0;
-  if GraphicsVersion and ( aBackground <> '' ) then
+  if ( aBackground <> '' ) then
     with (IO as TDRLGFXIO) do
       if Textures.Exists(aBackground)
          then FBGTexture := (IO as TDRLGFXIO).Textures.TextureID[aBackground]

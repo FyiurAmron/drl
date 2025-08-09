@@ -50,7 +50,6 @@ protected
   procedure ResetSoundCallback;
   procedure ReloadArrays;
   procedure ReloadChallenge( aType : Byte );
-  procedure RenderASCIILogo;
 protected
   FSize        : TIOPoint;
   FRect        : TIORect;
@@ -120,16 +119,13 @@ begin
   FMode       := aInitial;
   FResult     := aResult;
   FSaveExists := False;
-  FJHCLink    := (CoreModuleID = 'drl');
-  if (not FJHCLink) and DemoVersion then
-    FJHCLink := True;
   FArrayCType := nil;
   FArrayDiff  := nil;
   FArrayKlass := nil;
   FArrayChal  := nil;
   FTitleChal  := '';
   FSize       := Point( 80, 25 );
-  FChallenges := ( LuaSystem.Get( ['chal','__counter'], 0 ) > 0 ) and (not DemoVersion);
+  FChallenges := ( LuaSystem.Get( ['chal','__counter'], 0 ) > 0 );
 
   if not ( FMode in [MAINMENU_FIRST,MAINMENU_INTRO] ) then
     Assert( aResult <> nil, 'nil result passed!' );
@@ -142,16 +138,6 @@ begin
 
       FFirst := AnsiString( LuaSystem.ProtectedCall( [CoreModuleID,'GetFirstText'], [] ) );
       if FFirst = '' then FMode := MAINMENU_INTRO;
-
-      if not DemoVersion then
-      begin
-        if FileExists( ModuleUserPath + 'savedemo' ) then
-        begin
-          if ( not FileExists( ModuleUserPath + 'save' ) )
-            then RenameFile( ModuleUserPath + 'savedemo', ModuleUserPath + 'save' )
-            else DeleteFile( ModuleUserPath + 'savedemo' );
-        end;
-      end;
     end
     else
       FMode := MAINMENU_INTRO;
@@ -165,11 +151,8 @@ begin
     FIntro2 := AnsiString( LuaSystem.ProtectedCall( [CoreModuleID,'GetLogoText'], [] ) );
   end;
 
-  if GraphicsVersion then
-  begin
-    FBGTexture   := (IO as TDRLGFXIO).Textures.TextureID['background'];
-    FLogoTexture := (IO as TDRLGFXIO).Textures.TextureID[AnsiString( LuaSystem.ProtectedCall( [CoreModuleID,'GetLogoTexture'], [] ) )];
-  end;
+  FBGTexture   := (IO as TDRLGFXIO).Textures.TextureID['background'];
+  FLogoTexture := (IO as TDRLGFXIO).Textures.TextureID[AnsiString( LuaSystem.ProtectedCall( [CoreModuleID,'GetLogoTexture'], [] ) )];
 
   if FMode = MAINMENU_MENU then
   begin
@@ -189,17 +172,13 @@ begin
     end;
   end;
   VTIG_Clear;
-  if GraphicsVersion then Render;
+  Render;
   if not IO.IsTopLayer( Self ) then
   begin
     ResetSoundCallback;
     Exit;
   end;
   SetSoundCallback;
-
-  if not GraphicsVersion then
-    if FMode in [MAINMENU_INTRO,MAINMENU_MENU,MAINMENU_DIFFICULTY,MAINMENU_KLASS,MAINMENU_FAIR,MAINMENU_CTYPE,MAINMENU_NAME] then
-      RenderASCIILogo;
 
   case FMode of
     MAINMENU_FIRST      : UpdateFirst;
@@ -337,12 +316,6 @@ begin
     if VTIG_Selected( MAINMENU_ID ) = iCount
       then begin FMode := MAINMENU_DONE; FResult.Quit := True; end
       else VTIG_ResetSelect( MAINMENU_ID, iCount );
-  end;
-
-  if ForceShop then
-  begin
-    //DRL.OpenJHCPage;
-    ForceShop := False;
   end;
 
   if ForceRestart <> '' then
@@ -918,23 +891,6 @@ begin
     finally
       Free;
     end;
-end;
-
-procedure TMainMenuView.RenderASCIILogo;
-var iCount  : Integer;
-    iString : AnsiString;
-begin
-  if GraphicsVersion then Exit;
-
-  if IO.Ascii.Exists('logo') then
-  begin
-    iCount := 0;
-    for iString in IO.Ascii['logo'] do
-    begin
-      VTIG_FreeLabel( iString, Point( 17, iCount ) );
-      Inc( iCount );
-    end;
-  end;
 end;
 
 destructor TMainMenuView.Destroy;

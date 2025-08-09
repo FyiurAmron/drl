@@ -87,17 +87,6 @@ function DRLMain( interopCallback: TCallbackProc ): Integer; cdecl; export;
             ConfigurationPath := RootPath + 'godmode.lua';
           end;
           if isSet('config')     then ConfigurationPath := get('config');
-          if isSet('nosound')    then ForceNoAudio    := True;
-          if isSet('graphics')   then
-          begin
-            GraphicsVersion := True;
-            ForceGraphics := True;
-          end;
-          if isSet('console')    then
-          begin
-            GraphicsVersion := False;
-            ForceConsole := True;
-          end;
 
           if FileExists( SettingsPath )
             then Configuration.Read( SettingsPath )
@@ -150,22 +139,6 @@ function DRLMain( interopCallback: TCallbackProc ): Integer; cdecl; export;
     
           drlbase.DRL.Initialize;
     
-          {$IFDEF WINDOWS}
-          if not GraphicsVersion then
-          begin
-            if Option_LockBreak then
-            begin
-              SetConsoleCtrlHandler(nil, False);
-              SetConsoleCtrlHandler(@ConsoleEventProc, True);
-            end;
-            if Option_LockClose then
-            begin
-              Handle := FindWindow(nil, PChar(Title));
-              RemoveMenu(GetSystemMenu( Handle, FALSE), SC_CLOSE , MF_GRAYED);
-              DrawMenuBar(FindWindow(nil, PChar(Title)));
-            end;
-          end;
-          {$ENDIF}
           Log( 'interop returns: ' + IntToStr(INTEROP( CB_APP, 'start' )) );
           drlbase.DRL.Run;
           drlbase.DRL.UnLoad;

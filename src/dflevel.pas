@@ -363,16 +363,6 @@ function TLevel.getGylph(const aCoord: TCoord2D): TIOGylph;
         StatusWhite   : if aHighlight then aAtr := White        else aAtr := DarkGray;
         StatusInvert  : if aHighlight then aAtr := 16*LightGray else aAtr := 16*LightGray+DarkGray;
       end;
-    {    if GraphicsVersion then
-    begin
-      distmod := 1.0 - Distance(Coord,Player.Position) * 0.1;
-      if distmod < 0.2 then distmod := 0.2;
-      Color[0] := Round((GLFloatColors[atr mod 16].X * distmod ) * 255);
-      Color[1] := Round((GLFloatColors[atr mod 16].Y * distmod ) * 255);
-      Color[2] := Round((GLFloatColors[atr mod 16].Z * distmod ) * 255);
-      Color[3] := 255;
-      IO.Console.OutputChar( Coord.x+1,Coord.y+2,color,TTrueColor(chr));
-    end}
     Exit( aAtr );
   end;
 var iColor    : TIOColor;
@@ -589,25 +579,20 @@ end;
 procedure TLevel.PreEnter;
 var c : TCoord2D;
 begin
-  if GraphicsVersion then
-  begin
-    for c in FArea do
-      if SF_MULTI in Cells[CellBottom[c]].Sprite[0].Flags then
-        FMap.Rotation[c.x,c.y] := SpriteMap.GetCellRotationMask(c);
 
-    (IO as TDRLGFXIO).UpdateMinimap;
-    RecalcFluids;
-    SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
-  end;
+  for c in FArea do
+    if SF_MULTI in Cells[CellBottom[c]].Sprite[0].Flags then
+      FMap.Rotation[c.x,c.y] := SpriteMap.GetCellRotationMask(c);
+
+  (IO as TDRLGFXIO).UpdateMinimap;
+  RecalcFluids;
+  SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
 
   CallHook( Hook_OnEnterLevel,[FIndex,FID] );
   Player.CallHook( Hook_OnEnterLevel,[FIndex,FID] );
 
-  if GraphicsVersion then
-  begin
-    RecalcFluids;
-    SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
-  end;
+  RecalcFluids;
+  SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
 
   Player.LevelEnter;
 
@@ -698,7 +683,6 @@ function TLevel.CellExplored( coord: TCoord2D ): boolean;
 begin
   if Player.Flags[ BF_DARKNESS ] and not isVisible( coord ) then Exit(False);
   if Player.Flags[ BF_STAIRSENSE ] and (CF_STAIRSENSE in Cells[ GetCell(coord) ].Flags) then Exit(True);
-  if Option_BlindMode and not GraphicsVersion then Exit(False);
   Exit(isExplored( coord ));
 end;
 
@@ -1686,8 +1670,7 @@ var State : TDRLLuaState;
 begin
   State.Init(L);
   Level := State.ToObject(1) as TLevel;
-  if GraphicsVersion then
-    Level.RecalcFluids;
+  Level.RecalcFluids;
   Exit( 0 );
 end;
 

@@ -87,7 +87,9 @@ begin
     else iSoundID := IO.Audio.ResolveSoundID( [ FID+'.'+aSoundID, FSoundID+'.'+aSoundID, aSoundID ] );
 
   if iSoundID = 0 then Exit( False );
-  IO.Audio.PlaySound( iSoundID, aPosition, aDelay );
+  if aDelay > 0
+    then IO.Audio.QueueSound( iSoundID, aPosition, aDelay )
+    else IO.Audio.PlaySound( iSoundID, aPosition );
   Exit( True );
 end;
 

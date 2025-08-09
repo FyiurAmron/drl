@@ -109,16 +109,12 @@ begin
   FWarning  := '';
   FRestart  := '';
 
-
-  if GraphicsVersion then
-  begin
-    iCount := Min( 17, IO.Driver.DisplayModes.Size );
-    SetLength( FResolutions, iCount + 1);
-    FResolutions[0] := 'Automatic';
-    for i := 1 to iCount do
-      with IO.Driver.DisplayModes[i-1] do
-        FResolutions[i] := IntToStr( Width ) + 'x' + IntToStr( Height )
-  end;
+  iCount := Min( 17, IO.Driver.DisplayModes.Size );
+  SetLength( FResolutions, iCount + 1);
+  FResolutions[0] := 'Automatic';
+  for i := 1 to iCount do
+    with IO.Driver.DisplayModes[i-1] do
+      FResolutions[i] := IntToStr( Width ) + 'x' + IntToStr( Height );
 
   SetLength( FModules, DRL.Modules.CoreModules.Size + 1 );
   FModCurrent := Configuration.GetString('default_module');
@@ -249,26 +245,21 @@ begin
         begin
           if FState = SETTINGSVIEW_DISPLAY then
           begin
-            if GraphicsVersion then
+            if VTIG_EnumInput( iMode.Access, iSelected = i, @FResInput, FResolutions ) then
             begin
-              if VTIG_EnumInput( iMode.Access, iSelected = i, @FResInput, FResolutions ) then
+              if iMode.Value = 0 then
               begin
-                if iMode.Value = 0 then
-                begin
-                  Configuration.AccessInteger( 'screen_width' )^  := 0;
-                  Configuration.AccessInteger( 'screen_height' )^ := 0;
-                end
-                else
-                with IO.Driver.DisplayModes[ iMode.Value - 1 ] do
-                begin
-                  Configuration.AccessInteger( 'screen_width' )^  := Width;
-                  Configuration.AccessInteger( 'screen_height' )^ := Height;
-                end;
-                DRL.Reconfigure;
+                Configuration.AccessInteger( 'screen_width' )^  := 0;
+                Configuration.AccessInteger( 'screen_height' )^ := 0;
+              end
+              else
+              with IO.Driver.DisplayModes[ iMode.Value - 1 ] do
+              begin
+                Configuration.AccessInteger( 'screen_width' )^  := Width;
+                Configuration.AccessInteger( 'screen_height' )^ := Height;
               end;
-            end
-            else
-              VTIG_InputField('Unavailable');
+              DRL.Reconfigure;
+            end;
 
             Inc( i );
           end;
@@ -342,9 +333,7 @@ begin
   end;
   if ( FState = SETTINGSVIEW_DISPLAY ) and ( iSelected = 0 )then
   begin
-    if GraphicsVersion
-      then VTIG_Text( 'Choose screen resolution. Pick {!Automatic} to use native in fullscreen.' )
-      else VTIG_Text( 'Resolution choice unavailable in ASCII mode. You can still reset it to default if needed.' );
+       VTIG_Text( 'Choose screen resolution. Pick {!Automatic} to use native in fullscreen.' );
   end;
 
 

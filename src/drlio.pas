@@ -201,9 +201,8 @@ end;
 
 procedure TDRLIO.BloodSlideDown( aDelayTime : Word );
 begin
-  if GraphicsVersion then
-    if Player <> nil then
-      SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
+  if Player <> nil then
+    SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
 end;
 
 procedure TDRLIO.WaitForAnimation;
@@ -304,7 +303,7 @@ begin
       end;
       iDistance := Distance(iCoord, aWhere);
       if iDistance > aData.Range then Continue;
-      if GraphicsVersion and ( aData.Sprite.SpriteID[0] <> 0 )
+      if ( aData.Sprite.SpriteID[0] <> 0 )
         then addMarkAnimation( aData.Sprite.Frametime * aData.Sprite.Frames - 1, aDelay+iDistance*aData.Delay, iCoord, aData.Sprite, 0, ' ' )
         else ExplosionMark( iCoord, aData.Color, 3*aData.Delay, aDelay+iDistance*aData.Delay );
     end;
@@ -745,9 +744,7 @@ var iFName : AnsiString;
     iCount : DWord;
     iCon   : TUIConsole;
 begin
-  if GraphicsVersion
-     then iExt := '.png'
-     else iExt := '.txt';
+  iExt := '.png';
 
   iName := 'DRL';
   if Player <> nil then iName := Player.Name;
@@ -761,18 +758,7 @@ begin
   end;
 
   Log('Writing screenshot...: '+iFName);
-  if not GraphicsVersion then
-  begin
-    iCon.Init( FConsole );
-    if aBB then iCon.ScreenShot(iFName,1)
-           else iCon.ScreenShot(iFName);
-  end
-  else
-  begin
-    TSDLIODriver(FIODriver).ScreenShot(iFName);
-  end;
-    {  if aBB then UI.Msg('BB Screenshot created.')
-             else UI.Msg('Screenshot created.');}
+  TSDLIODriver(FIODriver).ScreenShot(iFName);
 end;
 
 procedure TDRLIO.DrawHud;
@@ -831,25 +817,21 @@ begin
   end;
 
   iCon.Init( FConsole );
-  if GraphicsVersion then
-    iCon.Clear;
+  iCon.Clear;
 
   if Player <> nil then
   begin
     iPos    := Point( 1,FConsole.SizeY-3 );
     iBottom := FConsole.SizeY-1;
-    if GraphicsVersion then
+    if FNarrowMode then
     begin
-      if FNarrowMode then
-      begin
-        iPos    := Point( 1,FConsole.SizeY-3 );
-        iBottom := FConsole.SizeY-4;
-      end
-      else
-      begin
-        iPos    := Point( 1,FConsole.SizeY-2 );
-        iBottom := FConsole.SizeY-3;
-      end;
+      iPos    := Point( 1,FConsole.SizeY-3 );
+      iBottom := FConsole.SizeY-4;
+    end
+    else
+    begin
+      iPos    := Point( 1,FConsole.SizeY-2 );
+      iBottom := FConsole.SizeY-3;
     end;
     iHPP    := Round((Player.HP/Player.HPMax)*100);
 
@@ -909,12 +891,12 @@ begin
 
   if FHintOverlay <> ''
     then VTIG_FreeLabel( ' '+FHintOverlay+' ', Point( iOffset-Length( FHintOverlay ), 2 ), Yellow )
-    else if ( (FHint <> '') and ( not GraphicsVersion ) )
+    else if ( (FHint <> '') and False )
       then VTIG_FreeLabel( ' '+FHint+' ', Point( iOffset-Length( FHint ), 2 ), Yellow )
       else if (FHintTarget <> '') and Setting_AutoTarget
         then VTIG_FreeLabel( ' '+FHintTarget+' ', Point( iOffset-Length( FHintTarget ), 2 ), Brown );
 
-  if GraphicsVersion and ( FHint <> '' ) then
+  if ( FHint <> '' ) then
     VTIG_FreeLabel( ' '+FHint+' ', Point( 20, 4 ), Yellow );
 
   if ( DRL.Level <> nil ) and ( DRL.Level.Boss <> 0 ) then
@@ -1422,7 +1404,6 @@ function lua_ui_save_and_quit(L: Plua_State): Integer; cdecl;
 var iState : TDRLLuaState;
 begin
   iState.Init(L);
-  ForceShop := iState.ToBoolean(1);
   IO.FadeOut(0.5);
   DRL.SetState( DSSaving );
   Result := 0;
@@ -1470,7 +1451,6 @@ end;
 var iErrorMessage : AnsiString;
 begin
   {$IFDEF WINDOWS}
-  if GraphicsVersion then
   begin
     iErrorMessage := 'DRL crashed!'#10#10'Reason : '+aInfo+#10#10
      +'If this reason doesn''t seem your fault, please submit a bug report at http://forum.chaosforge.org/'#10
@@ -1478,28 +1458,25 @@ begin
      +Iff(aInGame and Option_SaveOnCrash,#10'DRL will also attempt to save your game, so you may continue on the next level.');
     MessageBox( 0, PChar(iErrorMessage),
      'DRL - Fatal Error!', MB_OK or MB_ICONERROR );
-  end
-  else
-  {$ENDIF}
-  begin
-    DoneVideo;
-    Writeln;
-    Writeln;
-    Writeln;
-    Writeln('Abnormal program termination!');
-    Writeln;
-    Writeln('Reason : ',aInfo);
-    Writeln;
-    Writeln('If this reason doesn''t seem your fault, please submit a bug report at' );
-    Writeln('http://forum.chaosforge.org/, be sure to include the last entries in');
-    Writeln('your error.log that will get created once you hit Enter.');
-    if aInGame and Option_SaveOnCrash then
-    begin
-      Writeln( 'DRL will also attempt to save your game, so you may continue on' );
-      Writeln( 'the next level.' );
-    end;
-    Readln;
   end;
+  {$ENDIF}
+  DoneVideo;
+  Writeln;
+  Writeln;
+  Writeln;
+  Writeln('Abnormal program termination!');
+  Writeln;
+  Writeln('Reason : ',aInfo);
+  Writeln;
+  Writeln('If this reason doesn''t seem your fault, please submit a bug report at' );
+  Writeln('http://forum.chaosforge.org/, be sure to include the last entries in');
+  Writeln('your error.log that will get created once you hit Enter.');
+  if aInGame and Option_SaveOnCrash then
+  begin
+    Writeln( 'DRL will also attempt to save your game, so you may continue on' );
+    Writeln( 'the next level.' );
+  end;
+  Readln;
 end;
 
 end.
