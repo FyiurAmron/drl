@@ -296,6 +296,9 @@
       <Debugging>
         <DebugInfoType Value="dsDwarf3"/>
       </Debugging>
+      <Options>
+        <ExecutableType Value="Library"/>
+      </Options>
     </Linking>
     <Other>
       <CompilerMessages>
