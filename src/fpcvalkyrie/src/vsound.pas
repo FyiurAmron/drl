@@ -47,8 +47,6 @@ TSound = class(TSystem)
        function GetSampleID(const  mID: Ansistring ) : DWord;
        // Plays a MIDI/MOD song
        procedure PlayMusic(const mID : Ansistring);
-       // Plays a MIDI/MOD song once
-       procedure PlayMusicOnce(const mID : Ansistring);
        // Plays a sample once
        procedure PlaySample(mID : Word; Volume : Byte = 128; Pan : Integer = -1 );
        // Plays a sample once
@@ -257,18 +255,6 @@ begin
   PlayMusic( MusicArray[iID], MusicType[iID] );
   MusicPlaying := iID;
 end;
-
-procedure TSound.PlayMusicOnce(const mID : Ansistring);
-var iId : DWord;
-begin
-  if not FMusicEnabled then Exit;
-  if MusicPlaying >= 0 then Silence;
-  if not MusicNames.Exists(mID) then raise ESoundException.Create('Trying play non-existent Music ID#'+mID+'!');
-  iID := MusicNames[mID];
-  PlayMusic( MusicArray[iID], MusicType[iID], False );
-  MusicPlaying := iID;
-end;
-
 
 procedure TSound.PlaySample( mID: Word; Volume : Byte = 128; Pan : Integer = -1 );
 begin
@@ -522,25 +508,6 @@ begin
   Result := 0;
 end;
 
-function lua_audio_play_music_once(L: Plua_State): Integer; cdecl;
-var iMusicID : AnsiString;
-begin
-  if Sound = nil then Exit(0);
-  iMusicID := lua_tostring( L, 1 );
-  if iMusicID = '' then
-  begin
-    Sound.Silence;
-    Exit(0);
-  end;
-  if not Sound.MusicExists( iMusicID ) then
-  begin
-    Sound.Log( LOGWARN, 'Music entry "%s" does not exist!', [iMusicID] );
-    Exit( 0 );
-  end;
-  Sound.PlayMusicOnce( iMusicID );
-  Result := 0;
-end;
-
 function lua_audio_play_sound(L: Plua_State): Integer; cdecl;
 var iVolume, iPan : Integer;
     iSoundNID     : Word;
@@ -580,7 +547,7 @@ begin
   Result := 0;
 end;
 
-const lua_audio_lib : array[0..14] of luaL_Reg = (
+const lua_audio_lib : array[0..13] of luaL_Reg = (
 ( name : 'register_sound';    func : @lua_audio_register_sound),
 ( name : 'register_music';    func : @lua_audio_register_music),
 ( name : 'sound_exists';      func : @lua_audio_sound_exists),
@@ -593,7 +560,6 @@ const lua_audio_lib : array[0..14] of luaL_Reg = (
 ( name : 'stop_sound';        func : @lua_audio_stop_sound),
 ( name : 'get_sound_id';      func : @lua_audio_get_sound_id),
 ( name : 'play_music';        func : @lua_audio_play_music),
-( name : 'play_music_once';   func : @lua_audio_play_music_once),
 ( name : 'play_sound';        func : @lua_audio_play_sound),
 ( name : nil;                 func : nil; )
 );

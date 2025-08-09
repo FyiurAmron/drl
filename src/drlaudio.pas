@@ -41,7 +41,6 @@ type TDRLAudio = class
   procedure PlaySound( aSoundID : Word; aCoord : TCoord2D; aDelay : DWord = 0 );
   procedure PlaySound( const mID : Ansistring );
   procedure PlayMusic( const MusicID : Ansistring; aNotFound : Boolean = False );
-  procedure PlayMusicOnce( const MusicID : Ansistring );
   function ResolveSoundID( const ResolveIDs: array of AnsiString ) : Word;
   function GetSampleID( const aID: AnsiString ) : Word;
   destructor Destroy; override;
@@ -361,6 +360,7 @@ end;
 
 procedure TDRLAudio.PlayMusic(const MusicID : Ansistring; aNotFound : Boolean = False );
 begin
+  FAudioCallback( PChar('PlayMusic(' + MusicID + ')') );
   FLastMusic := MusicID;
   if (not SoundVersion) or (not Option_Music) or ( Setting_MusicVolume = 0 ) then Exit;
   try
@@ -377,22 +377,6 @@ begin
       Log('PlayMusic raised exception (' + E.ClassName + '): ' + e.message);
       IO.Msg( 'PlayMusic raised exception: ' + e.message );
     end;
-  end;
-end;
-
-procedure TDRLAudio.PlayMusicOnce(const MusicID : Ansistring);
-begin
-  if (not SoundVersion) or (not Option_Music) or ( Setting_MusicVolume = 0 )  then Exit;
-  try
-    if MusicID = '' then Sound.Silence;
-    if MusicOff then Exit;
-    if Sound.MusicExists(MusicID) then Sound.PlayMusicOnce(MusicID);
-  except
-      on e : Exception do
-      begin
-        Log('PlayMusicOnce raised exception (' + E.ClassName + '): ' + e.message);
-        IO.Msg( 'PlayMusic raised exception: ' + e.message );
-      end;
   end;
 end;
 
