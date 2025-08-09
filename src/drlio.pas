@@ -199,38 +199,11 @@ begin
   Exit( IO.ResolveSub( aID ) );
 end;
 
-{
-procedure OutPutRestore;
-var vx,vy : byte;
-begin
-  if GraphicsVersion then Exit;
-  for vx := 1 to 80 do for vy := 1 to 25 do VideoBuf^[(vx-1)+(vy-1)*ScreenSizeX] := GFXCapture[vy,vx];
-end;
-}
-
-//type TGFXScreen = array[1..25,1..80] of Word;
-//var  GFXCapture : TGFXScreen;
-
-
 procedure TDRLIO.BloodSlideDown( aDelayTime : Word );
-{
-const BloodPic : TPictureRec = (Picture : ' '; Color : 16*Red);
-var Temp  : TGFXScreen;
-    Blood : TGFXScreen;
-    vx,vy : byte;
-}
 begin
   if GraphicsVersion then
     if Player <> nil then
       SpriteMap.NewShift := SpriteMap.ShiftValue( Player.Position );
-
-{
-  for vx := 1 to 80 do for vy := 1 to 25 do Temp [vy,vx] := VideoBuf^[(vx-1)+(vy-1)*ScreenSizeX];
-  OutputRestore;
-  FillWord(Blood,25*80,Word(BloodPic));
-  SlideDown(DelayTime,Blood);
-  SlideDown(DelayTime,Temp);
-}
 end;
 
 procedure TDRLIO.WaitForAnimation;
@@ -352,34 +325,6 @@ begin
 
 end;
 
-{
-procedure TDRLIO.SlideDown(DelayTime : word; var NewScreen : TGFXScreen);
-var Pos  : array[1..80] of Byte;
-    cn,t, vx,vy : byte;
-  procedure MoveColumn(x : byte);
-  var y : byte;
-  begin
-    if pos[x]+1 > 25 then Exit;
-    for y := 24 downto pos[x]+1 do
-      VideoBuf^[(x-1)+y*LongInt(ScreenSizeX)] := VideoBuf^[(x-1)+(y-1)*LongInt(ScreenSizeX)];
-    VideoBuf^[(x-1)+pos[x]*LongInt(ScreenSizeX)] := NewScreen[pos[x]+1,x];
-    Inc(pos[x]);
-  end;
-
-begin
-  if GraphicsVersion then Exit;
-  for cn := 1 to 80  do Pos[cn] := 0;
-  for cn := 1 to 160 do MoveColumn(Random(80)+1);
-  t := 1;
-  repeat
-    Inc(t);
-    IO.Delay(DelayTime);
-    for cn := 1 to 80 do MoveColumn(cn);
-  until t = 25;
-  for vx := 1 to 80 do for vy := 1 to 25 do VideoBuf^[(vx-1)+(vy-1)*ScreenSizeX] := NewScreen[vy,vx];
-
-end;
-}
 procedure TDRLIO.UpdateStyles;
 begin
   TIGStyleColored   := VTIGDefaultStyle;

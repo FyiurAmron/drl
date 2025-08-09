@@ -45,11 +45,6 @@
         </Mode0>
       </Modes>
     </RunParams>
-    <RequiredPackages Count="1">
-      <Item1>
-        <PackageName Value="LCL"/>
-      </Item1>
-    </RequiredPackages>
     <Units Count="51">
       <Unit0>
         <Filename Value="drl.pas"/>
