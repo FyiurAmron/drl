@@ -283,7 +283,9 @@ end;
 
 procedure TLevel.playSound( const aSoundID: DWord; aCoord : TCoord2D; aDelay : DWord = 0 );
 begin
-  IO.Audio.PlaySound(aSoundID, aCoord, aDelay);
+  if aDelay > 0
+   then IO.Audio.QueueSound(aSoundID, aCoord, aDelay)
+   else IO.Audio.PlaySound(aSoundID, aCoord);
 end;
 
 procedure TLevel.playSound(const SoundID: string; coord : TCoord2D );

@@ -1,5 +1,6 @@
 {$INCLUDE drl.inc}
 {$DEFINE DISABLE_MUSIC}
+{$DEFINE DISABLE_SOUND}
 {
  ----------------------------------------------------
 Copyright (c) 2002-2025 by Kornel Kisielewicz
@@ -40,7 +41,8 @@ type TDRLAudio = class
   function LoadBindingDataFile( aData : TVDataFile; const aFile, aRoot : Ansistring ) : Boolean;
   procedure Load;
   procedure Update( aMSec : DWord );
-  procedure PlaySound( aSoundID : Word; aCoord : TCoord2D; aDelay : DWord = 0 );
+  procedure QueueSound( aSoundID : Word; aCoord : TCoord2D; aDelay : DWord );
+  procedure PlaySound( aSoundID : Word; aCoord : TCoord2D );
   procedure PlaySound( const mID : Ansistring );
   procedure PlayMusic( const MusicID : Ansistring; aNotFound : Boolean = False );
   function ResolveSoundID( const ResolveIDs: array of AnsiString ) : Word;
@@ -110,6 +112,9 @@ begin
   //Setting_MenuSound        := Configuration.GetBoolean( 'menu_sound' );
   Setting_MusicVolume      := Configuration.GetInteger( 'music_volume' );
   Setting_SoundVolume      := Configuration.GetInteger( 'sound_volume' );
+
+  INTEROP( CB_MUSIC, 'volume', IntToStr(Setting_MusicVolume) );
+  INTEROP( CB_SOUND, 'volume', IntToStr(Setting_SoundVolume) );
 
   Sound.SetSoundVolume(4*Setting_SoundVolume);
   Sound.SetMusicVolume(2*Setting_MusicVolume);
@@ -305,39 +310,47 @@ begin
   end;
 end;
 
-procedure TDRLAudio.PlaySound( const mID: Ansistring );
+procedure TDRLAudio.QueueSound( aSoundID : Word; aCoord : TCoord2D; aDelay : DWord );
+var
+  iSoundEvent : TSoundEvent;
 begin
-  Sound.PlaySample( mID );
+  iSoundEvent.Coord   := aCoord;
+  iSoundEvent.SoundID := aSoundID;
+  iSoundEvent.Time    := FTime + aDelay;
+  FSoundEvents.Insert( iSoundEvent );
 end;
 
-procedure TDRLAudio.PlaySound( aSoundID : Word; aCoord : TCoord2D; aDelay : DWord = 0 );
+procedure TDRLAudio.PlaySound( const mID: Ansistring );
+begin
+  INTEROP( CB_SOUND, 'play', mID );
+  {$IFNDEF DISABLE_SOUND}
+  Sound.PlaySample( mID );
+  {$ENDIF}
+end;
+
+procedure TDRLAudio.PlaySound( aSoundID : Word; aCoord : TCoord2D );
 var iVolume     : Byte;
     iPan        : Byte;
     iDist       : Word;
     iPos        : TCoord2D;
-    iSoundEvent : TSoundEvent;
 begin
-  if aSoundID = 0 then Exit;
   if (not Option_Sound) or SoundOff or ( Setting_SoundVolume = 0 ) then Exit;
-  if aDelay > 0 then
-  begin
-    iSoundEvent.Coord   := aCoord;
-    iSoundEvent.SoundID := aSoundID;
-    iSoundEvent.Time    := FTime + aDelay;
-    FSoundEvents.Insert( iSoundEvent );
-    Exit;
-  end;
 
   iPos := Player.Position;
 
   iDist := Distance(aCoord,iPos);
   if iDist <= 1 then iVolume := 127 else
                     iVolume := Clamp((25 - iDist) * 6,0,127);
-  if iVolume <> 0 then
-    if iVolume < 30 then iVolume := 30;
+  if iVolume = 0 then Exit;
 
   iPan := Clamp((aCoord.x-iPos.x) * 15,-128,127)+128;
-  Sound.PlaySample(aSoundID,iVolume,iPan);
+
+  INTEROP( CB_SOUND, 'play', IntToStr(aSoundID) + ',' + IntToStr(iVolume) + ',' + IntToStr(iPan) );
+  // TODO simplify the interface and pass just sound source coords
+  // - emit player pos update CB event just before for 100% pos accuracy
+  {$IFNDEF DISABLE_SOUND}
+  Sound.PlaySample( aSoundID, iVolume, iPan);
+  {$ENDIF}
 end;
 
 
@@ -362,7 +375,7 @@ end;
 
 procedure TDRLAudio.PlayMusic(const MusicID : Ansistring; aNotFound : Boolean = False );
 begin
-  INTEROP( CB_MUSIC, MusicID );
+  INTEROP( CB_MUSIC, 'play', MusicID );
   FLastMusic := MusicID;
   {$IFNDEF DISABLE_MUSIC}
   if (not Option_Music) or ( Setting_MusicVolume = 0 ) then Exit;

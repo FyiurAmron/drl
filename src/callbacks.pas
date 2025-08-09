@@ -6,7 +6,8 @@ type
   TCallbackType = (
     CB_LOG = 0,
     CB_APP = 1,
-    CB_MUSIC = 2
+    CB_MUSIC = 2,
+    CB_SOUND = 3
   );
 
 type
