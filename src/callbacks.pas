@@ -10,10 +10,10 @@ type
   );
 
 type
-  TCallbackProc = function( callbackType: TCallbackType; const message: PChar ) : Integer; cdecl;
+  TCallbackProc = function( callbackType: TCallbackType; const key: PChar; const value: PChar ) : Integer; cdecl;
 
-function DefaultCallback( callbackType: TCallbackType; const message: PChar ) : Integer; cdecl;
-function INTEROP( callbackType: TCallbackType; const message: Ansistring ) : Integer;
+function DefaultCallback( callbackType: TCallbackType; const key: PChar; const value: PChar ) : Integer; cdecl;
+function INTEROP( callbackType: TCallbackType;  const key: Ansistring; const value: Ansistring = '' ) : Integer;
 
 var
   GlobalInteropCallback : TCallbackProc = @DefaultCallback;
@@ -22,16 +22,16 @@ implementation
 
 uses TypInfo, vdebug;
 
-function DefaultCallback( callbackType: TCallbackType; const message: PChar ) : Integer; cdecl;
+function DefaultCallback( callbackType: TCallbackType; const key: PChar; const value: PChar ) : Integer; cdecl;
 begin
-  Log( 'default callback; got type: ' + GetEnumName(TypeInfo(TCallbackType), Ord(callbackType)) + ' message: ' + message );
+  Log( 'default callback: ' + GetEnumName(TypeInfo(TCallbackType), Ord(callbackType)) + ' :: ' + key + ' -> ' + value );
   Result := 0;
 end;
 
-function INTEROP( callbackType: TCallbackType; const message: Ansistring ) : Integer;
+function INTEROP( callbackType: TCallbackType; const key: Ansistring; const value: Ansistring = '' ) : Integer;
 begin
   // TODO add a reasonable try-catch for internal errors if possible?
-  Result := GlobalInteropCallback( callbackType, PChar( message ) );
+  Result := GlobalInteropCallback( callbackType, PChar( key ), PChar( value ) );
 end;
 
 end.
