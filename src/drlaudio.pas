@@ -36,9 +36,6 @@ type TDRLAudio = class
   procedure Reset;
   procedure Reconfigure;
   procedure Configure( aConfig : TLuaConfig; aReload : Boolean = False );
-  function LoadBindingFile( const aFile, aRoot : AnsiString ) : Boolean;
-  function LoadBindingDataFile( aData : TVDataFile; const aFile, aRoot : AnsiString ) : Boolean;
-  procedure Load;
   procedure Update( aMSec : DWord );
   procedure QueueSound( IDs : array of AnsiString; aCoord : TCoord2D; aDelay : DWord );
   procedure PlaySound( const mIDs : array of AnsiString; aCoord : TCoord2D );
@@ -46,25 +43,15 @@ type TDRLAudio = class
   procedure PlayMusic( const MusicID : AnsiString; aNotFound : Boolean = False );
   destructor Destroy; override;
 private
-  procedure Register( const aID, aFileName : AnsiString; aMusic : Boolean; const aRoot : AnsiString );
-  procedure SoundQuery( nkey, nvalue : Variant );
-  procedure MusicQuery( nkey, nvalue : Variant );
-private
-  FLastMusic   : AnsiString;
   FTime        : QWord;
   FSoundEvents : TSoundEventHeap;
   FCurrentData : TVDataFile;
-
-  FAudioRegistry : TAudioRegistry;
-  FMusicCount    : DWord;
-  FAudioLookup   : TAudioLookup;
-  FRoot          : Ansistring;
 end;
 
 implementation
 
 uses sysutils, math,
-     vdebug, vutil, vmath, vsound, vfmodsound, vsdlsound,
+     vdebug, vutil, vmath,
      drlio, drlconfiguration, dfplayer, dfdata;
 
 function DRLSoundEventCompare( const Item1, Item2: TSoundEvent ): Integer;
@@ -77,55 +64,28 @@ end;
 constructor TDRLAudio.Create;
 begin
   FSoundEvents   := TSoundEventHeap.Create( @DRLSoundEventCompare );
-  FAudioRegistry := TAudioRegistry.Create;
-  FAudioLookup   := TAudioLookup.Create;
   Reset;
 end;
 
 procedure TDRLAudio.Reset;
 begin
-  if Assigned( Sound ) then
-  begin
-    Sound.Silence;
-    Sound.Reset;
-  end;
   FSoundEvents.Clear;
-  FAudioRegistry.Clear;
-  FAudioLookup.Clear;
   FCurrentData := nil;
   FTime        := 0;
-  FMusicCount  := 0;
-  FRoot        := '';
-  FLastMusic   := '';
 end;
 
 procedure TDRLAudio.Reconfigure;
-var iOldMusic : Integer;
 begin
-  if not Assigned( Sound ) then Exit;
-
-  iOldMusic := Setting_MusicVolume;
-
-  //Setting_MenuSound        := Configuration.GetBoolean( 'menu_sound' );
   Setting_MusicVolume      := Configuration.GetInteger( 'music_volume' );
   Setting_SoundVolume      := Configuration.GetInteger( 'sound_volume' );
 
   INTEROP( CB_MUSIC, 'volume', IntToStr(Setting_MusicVolume) );
   INTEROP( CB_SOUND, 'volume', IntToStr(Setting_SoundVolume) );
-
-  Sound.SetSoundVolume(4*Setting_SoundVolume);
-  Sound.SetMusicVolume(2*Setting_MusicVolume);
-
-  if Setting_MusicVolume = 0
-    then Sound.Silence
-    else if iOldMusic = 0 then
-       PlayMusic( FLastMusic );
 end;
 
 procedure TDRLAudio.Update( aMSec : DWord );
 var iSoundEvent : TSoundEvent;
 begin
-  if Sound <> Nil then Sound.Update;
   FTime += aMSec;
   while (not FSoundEvents.isEmpty) and (FSoundEvents.Top.Time <= FTime) do
   begin
@@ -137,174 +97,6 @@ end;
 procedure TDRLAudio.Configure ( aConfig : TLuaConfig; aReload : Boolean ) ;
 begin
   FSoundEvents.Clear;
-  if (Option_SoundEngine <> 'NONE') then
-  begin
-    if Option_Music or Option_Sound then
-    begin
-      if (not aReload) and ( not Assigned( Sound ) ) then
-      begin
-        if Option_SoundEngine = 'FMOD'
-          then Sound := TFMODSound.Create
-          else Sound := TSDLSound.Create;
-      end
-      else
-        Sound.Reset;
-    end;
-  end;
-end;
-
-function TDRLAudio.LoadBindingFile( const aFile, aRoot : AnsiString ) : Boolean;
-var iState : TLuaConfig;
-begin
-  FCurrentData := nil;
-  if not FileExists( aFile ) then Exit( False );
-  FRoot  := aRoot;
-  Result := False;
-  try
-    iState := TLuaConfig.Create( aFile );
-    if Option_Music and iState.TableExists('music') then iState.EntryFeed( 'music', @MusicQuery );
-    if Option_Sound and iState.TableExists('sound') then iState.RecEntryFeed( 'sound', @SoundQuery );
-  finally
-    iState.Free;
-  end;
-  Result := True;
-end;
-
-function TDRLAudio.LoadBindingDataFile( aData : TVDataFile; const aFile, aRoot : AnsiString ) : Boolean;
-var iStream : TStream;
-    iSize   : Integer;
-    iState  : TLuaConfig;
-begin
-  if not aData.FileExists( aFile ) then Exit( False );
-  FCurrentData := aData;
-  iSize   := aData.GetFileSize( aFile );
-  iStream := aData.GetFile( aFile );
-  try
-    FRoot  := aRoot;
-    iState := TLuaConfig.Create;
-    iState.Load( iStream, iSize, aFile );
-    if Option_Music and iState.TableExists('music') then iState.EntryFeed( 'music', @MusicQuery );
-    if Option_Sound and iState.TableExists('sound') then iState.RecEntryFeed( 'sound', @SoundQuery );
-  finally
-    FreeAndNil( iState );
-    FreeAndNil( iStream );
-  end;
-  Exit( True );
-end;
-
-
-procedure TDRLAudio.Load;
-var iCount   : DWord;
-    iProgress: DWord;
-    iProgMod : Single;
-    iDataFile: TVDataFile;
-
-  procedure RegisterMusic( const aPath : AnsiString; aID : AnsiString );
-  var iFileName : AnsiString;
-      iStream   : TStream;
-  begin
-    if iDataFile <> nil then
-    begin
-      iFileName := ExtractFileName( aPath );
-      if iDataFile.FileExists( iFileName, 'music' ) then
-      begin
-        iStream := iDataFile.GetFile( iFileName, 'music' );
-        try
-          Sound.RegisterMusic( iStream, iDataFile.GetFileSize( iFileName, 'music' ), aID, ExtractFileExt( iFileName ) );
-        finally
-          FreeAndNil( iStream );
-        end;
-        Exit;
-      end;
-    end;
-    Sound.RegisterMusic( aPath, aID );
-  end;
-
-  procedure RegisterSample( const aPath : AnsiString; aID : AnsiString );
-  var iFileName : AnsiString;
-      iStream   : TStream;
-  begin
-    if iDataFile <> nil then
-    begin
-      iFileName := ExtractFileName( aPath );
-      if iDataFile.FileExists( iFileName, 'sound' ) then
-      begin
-        iStream := iDataFile.GetFile( iFileName, 'sound' );
-        try
-          Sound.RegisterSample( iStream, iDataFile.GetFileSize( iFileName, 'sound' ), aID );
-        finally
-          FreeAndNil( iStream );
-        end;
-        Exit;
-      end;
-    end;
-    Sound.RegisterSample( aPath, aID );
-  end;
-
-begin
-  iProgMod := 0;
-  if FAudioRegistry.Size > 0 then
-    iProgMod  := 50 / Single(FAudioRegistry.Size);
-  iProgress := IO.LoadCurrent;
-
-  if FAudioRegistry.Size > 0 then
-    for iCount := 0 to FAudioRegistry.Size - 1 do
-      with FAudioRegistry[ iCount ] do
-      begin
-        iDataFile := DataFile;
-        if IsMusic
-          then RegisterMusic( Root + FileName, ID  )
-          else RegisterSample( Root + FileName, ID  );
-        if iCount mod 10 = 0 then
-          IO.LoadProgress( Floor(iProgMod * iCount) + iProgress );
-      end;
-  IO.LoadProgress( 100 );
-end;
-
-procedure TDRLAudio.SoundQuery(nkey,nvalue : Variant);
-var iKey, iValue : AnsiString;
-begin
-  iKey   := LowerCase(nKey);
-  iValue := nValue;
-  Register( iKey, iValue, False, FRoot );
-end;
-
-procedure TDRLAudio.MusicQuery(nkey,nvalue : Variant);
-var iKey, iValue : AnsiString;
-begin
-  iKey   := LowerCase(nKey);
-  iValue := nValue;
-  Register( iKey, iValue, True, FRoot );
-end;
-
-procedure TDRLAudio.Register( const aID, aFileName : AnsiString; aMusic : Boolean; const aRoot : AnsiString );
-var iIndex : Integer;
-    iEntry : TAudioEntry;
-begin
-  iIndex := FAudioLookup.Get( aID, -1 );
-  iEntry.ID       := aID;
-  iEntry.FileName := aFileName;
-  iEntry.Root     := aRoot;
-  iEntry.IsMusic  := aMusic;
-  iEntry.DataFile := FCurrentData;
-
-  if iIndex >= 0 then
-  begin
-    if FAudioRegistry[iIndex].Root = aRoot then
-      Log( LOGWARN, 'Audio ID "'+aID+'" redefinition within same module!' );
-    if FAudioRegistry[iIndex].IsMusic <> aMusic then
-    begin
-      Log( LOGERROR, 'Audio ID "'+aID+'" redefinition type mismatch!' );
-      Exit;
-    end;
-    FAudioRegistry[iIndex] := iEntry;
-  end
-  else
-  begin
-    iIndex := FAudioRegistry.Size;
-    FAudioRegistry.Push( iEntry );
-    FAudioLookup[ aID ] := iIndex;
-  end;
 end;
 
 procedure TDRLAudio.QueueSound( IDs : array of AnsiString; aCoord : TCoord2D; aDelay : DWord );
@@ -323,9 +115,6 @@ end;
 procedure TDRLAudio.PlaySound( const mID: AnsiString );
 begin
   INTEROP( CB_SOUND, 'play', mID );
-  {$IFNDEF DISABLE_SOUND}
-  Sound.PlaySample( mID );
-  {$ENDIF}
 end;
 
 function JoinAnsi(const Arr: array of AnsiString; const Delim: string): string;
@@ -361,62 +150,16 @@ begin
   INTEROP( CB_SOUND, 'play', ''+JoinAnsi(mIDs,'?') + ',' + IntToStr(iVolume) + ',' + IntToStr(iPan) );
   // TODO simplify the interface and pass just sound source coords
   // - emit player pos update CB event just before for 100% pos accuracy
-  {$IFNDEF DISABLE_SOUND}
-  Sound.PlaySample( aSoundID, iVolume, iPan);
-  {$ENDIF}
 end;
-
-{
-function TDRLAudio.ResolveSoundID(const ResolveIDs: array of AnsiString): Word;
-var c : DWord;
-begin
-  if (not Option_Sound) or SoundOff then Exit(0);
-  for c := Low(ResolveIDs) to High(ResolveIDs) do
-    if ResolveIDs[c] <> '' then
-    begin
-      Result := Sound.GetSampleID(ResolveIDs[c]);
-      if Result <> 0 then Exit( Result );
-    end;
-  Exit(0);
-end;
-
-function TDRLAudio.GetSampleID( const aID: AnsiString ) : Word;
-begin
-  if (not Option_Sound) or SoundOff then Exit(0);
-  Exit( Sound.GetSampleID( aID ) );
-end;
-}
 
 procedure TDRLAudio.PlayMusic(const MusicID : Ansistring; aNotFound : Boolean = False );
 begin
   INTEROP( CB_MUSIC, 'play', MusicID );
-  FLastMusic := MusicID;
-  {$IFNDEF DISABLE_MUSIC}
-  if (not Option_Music) or ( Setting_MusicVolume = 0 ) then Exit;
-  try
-    if MusicID = '' then Sound.Silence;
-    if MusicOff then Exit;
-    if Sound.MusicExists(MusicID)
-      then Sound.PlayMusic(MusicID)
-      else if aNotFound
-        then Exit
-        else PlayMusic('level'+IntToStr(Random(23)+2), True );
-  except
-    on e : Exception do
-    begin
-      Log('PlayMusic raised exception (' + E.ClassName + '): ' + e.message);
-      IO.Msg( 'PlayMusic raised exception: ' + e.message );
-    end;
-  end;
-  {$ENDIF}
 end;
 
 destructor TDRLAudio.Destroy;
 begin
   FreeAndNil( FSoundEvents );
-  FreeAndNil( FAudioRegistry );
-  FreeAndNil( FAudioLookup );
-  FreeAndNil( Sound );
 end;
 
 end.

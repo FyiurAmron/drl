@@ -358,7 +358,6 @@ begin
       iData.Load('ascii');
       iData.RegisterLoader(FILETYPE_IMAGE ,@((IO as TDRLGFXIO).Textures.LoadTextureCallback));
       iData.Load('graphics');
-      IO.Audio.LoadBindingDataFile( iData, 'audio.lua', DataPath );
       FOpenData.Push( iData );
     end
     else
@@ -371,13 +370,10 @@ begin
       LoadFiles( iModule.Path + 'help', @Help.StreamLoader, '*.hlp' );
       LoadFiles( iModule.Path + 'ascii', @IO.ASCIILoader, '*.asc' );
       (IO as TDRLGFXIO).Textures.LoadTextureFolder( iModule.Path + 'graphics' );
-      // temporary hack, remove once drllq and drlhq are modules
-      IO.Audio.LoadBindingFile( iModule.Path + 'audio.lua', iModule.Path );
     end;
   end;
 
   IO.LoadProgress(iProgBase + 50);
-  IO.Audio.Load;
   VersionModule     := LuaSystem.Get( 'VERSION_MODULE' );
   VersionModuleSave := LuaSystem.Get( 'VERSION_MODULE_SAVE' );
 
