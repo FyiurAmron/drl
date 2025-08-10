@@ -22,7 +22,7 @@ type TDRLTextIO = class( TDRLIO )
     procedure Blink( aColor : Byte; aDuration : Word = 100; aDelay : DWord = 0); override;
     procedure addMissileAnimation( aDuration : DWord; aDelay : DWord; aSource, aTarget : TCoord2D; aColor : Byte; aPic : Char; aDrawDelay : Word; aSprite : TSprite; aRay : Boolean = False ); override;
     procedure addMarkAnimation( aDuration : DWord; aDelay : DWord; aCoord : TCoord2D; aSprite : TSprite; aColor : Byte; aPic : Char ); override;
-    procedure addSoundAnimation( aDelay : DWord; aPosition : TCoord2D; aSoundID : DWord ); override;
+    procedure addSoundAnimation( aDelay : DWord; aPosition : TCoord2D; mSoundID : array of Ansistring ); override;
     procedure Explosion( aDelay : Integer; aWhere : TCoord2D; aData : TExplosionData ); override;
 
     procedure SetTextMap( aMap : ITextMap );
@@ -144,10 +144,10 @@ begin
   FTextMap.AddAnimation( TTextMarkAnimation.Create( aCoord, IOGylph( aPic, aColor ), aDuration, aDelay ) );
 end;
 
-procedure TDRLTextIO.addSoundAnimation(aDelay: DWord; aPosition: TCoord2D; aSoundID: DWord);
+procedure TDRLTextIO.addSoundAnimation(aDelay: DWord; aPosition: TCoord2D; mSoundID: array of AnsiString);
 begin
   if DRL.State <> DSPlaying then Exit;
-  FTextMap.AddAnimation( TSoundEventAnimation.Create( aDelay, aPosition, aSoundID ) )
+  FTextMap.AddAnimation( TSoundEventAnimation.Create( aDelay, aPosition, mSoundID ) )
 end;
 
 procedure TDRLTextIO.ExplosionMark( aCoord : TCoord2D; aColor : Byte; aDuration : DWord; aDelay : DWord );

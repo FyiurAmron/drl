@@ -35,8 +35,6 @@ uses SysUtils,
      callbacks;
 
 {$IFDEF WINDOWS}
-var Handle : HWND;
-    Title  : AnsiString;
 
 {$R *.res}
 
@@ -74,8 +72,8 @@ function DRLMain( interopCallback: TCallbackProc ): Integer; cdecl; export;
         ConfigurationPath := RootPath + 'config.lua';
         SettingsPath      := RootPath + 'settings.lua';
 
-        Title := 'FRogS - Free Roguelike Shooter';
-        SetConsoleTitle(PChar(Title));
+        //Title := 'FRogS - Free Roguelike Shooter';
+        //SetConsoleTitle(PChar(Title));
         {$ENDIF}
         ColorOverrides := nil;
 
@@ -115,8 +113,8 @@ function DRLMain( interopCallback: TCallbackProc ): Integer; cdecl; export;
         Logger.AddSink( TTextFileLogSink.Create( LOGDEBUG, WritePath + 'runtime.log', False ) );
         LogSystemInfo();
         Logger.Log( LOGINFO, 'Log path set to - ' + WritePath );
-    
         ErrorLogFileName := WritePath + 'error.log';
+
         Randomize;
     
         drlbase.DRL := TDRL.Create;

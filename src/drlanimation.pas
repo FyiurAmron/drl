@@ -65,11 +65,11 @@ end;
 { TSoundEventAnimation }
 
 TSoundEventAnimation = class(TAnimation)
-  constructor Create( aDelay : DWord; aPosition : TCoord2D; aSoundID : DWord );
+  constructor Create( aDelay : DWord; aPosition : TCoord2D; mSoundIDs : array of Ansistring );
   procedure OnStart; override;
 private
   FPosition : TCoord2D;
-  FSoundID  : DWord;
+  FSoundIDs  : array of AnsiString;
 end;
 
 { TGFXBlinkAnimation }
@@ -321,16 +321,20 @@ end;
 
 { TSoundEventAnimation }
 
-constructor TSoundEventAnimation.Create( aDelay : DWord; aPosition : TCoord2D; aSoundID : DWord );
+constructor TSoundEventAnimation.Create( aDelay : DWord; aPosition : TCoord2D; mSoundIDs : array of AnsiString );
+var i: Integer;
 begin
   inherited Create( 1, aDelay, 0 );
   FPosition := aPosition;
-  FSoundID  := aSoundID;
+  SetLength(FSoundIDs, Length(mSoundIDs));
+  for i := Low(mSoundIDs) to High(mSoundIDs) do
+    FSoundIDs[i] := mSoundIDs[i];
+  //FSoundIDs  := mSoundIDs;
 end;
 
 procedure TSoundEventAnimation.OnStart;
 begin
-  IO.Audio.PlaySound( FSoundID, FPosition );
+  IO.Audio.PlaySound( FSoundIDs, FPosition );
 end;
 
 { TGFXBlinkAnimation }

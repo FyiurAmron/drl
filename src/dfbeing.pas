@@ -373,8 +373,6 @@ begin
 
   FVisionRadius := VisionBaseValue + Table.getInteger('vision');
 
-  Flags[ BF_WALKSOUND ] := ( IO.Audio.ResolveSoundID( [ FID+'.hoof', FSoundID+'.hoof' ] ) <> 0 );
-
   FHPMax := FHP;
   FHPNom := FHP;
   FSpeedCount := 900+Random(90);
@@ -1798,7 +1796,7 @@ begin
 
   if not iMissed then
   begin
-    if ( iWeapon <> nil ) then IO.addSoundAnimation( Iif( Second, 100, 30 ), aTarget.Position, IO.Audio.ResolveSoundID(['flesh_blade_hit']) );
+    if ( iWeapon <> nil ) then IO.addSoundAnimation( Iif( Second, 100, 30 ), aTarget.Position, ['flesh_blade_hit'] );
     // Damage roll
     iDamage := rollMeleeDamage( iWeaponSlot );
 
@@ -2072,7 +2070,7 @@ var iDirection  : TDirection;
     iMarkSeq    : DWord;
     iSteps      : DWord;
     iDelay      : DWord;
-    iSound      : DWord;
+    iSoundIDs   : array of AnsiString;
     iMissile    : DWord;
     iDirectHit  : Boolean;
     iThisUID    : TUID;
@@ -2260,10 +2258,9 @@ begin
 
   if UIDs[ iThisUID ] = nil then Exit( False );
 
-  iSound  := IO.Audio.ResolveSoundID([aItem.ID+'.fire',Missiles[iMissile].soundID+'.fire','fire']);
+  iSoundIDs := [aItem.ID+'.fire', Missiles[iMissile].soundID+'.fire', 'fire' ];
   iSprite := Missiles[iMissile].Sprite;
-  if iSound <> 0 then
-    IO.addSoundAnimation( aSequence, iSource, iSound );
+  IO.addSoundAnimation( aSequence, iSource, iSoundIDs );
 
   if not ( MF_IMMIDATE in Missiles[iMissile].Flags ) then
   begin
@@ -2280,7 +2277,7 @@ begin
     IO.addMissileAnimation( iDuration, aSequence,iSource,iMisslePath.GetC,iColor,Missiles[iMissile].Picture,iDelay,iSprite,MF_RAY in Missiles[iMissile].Flags);
     if iHit and iLevel.isVisible( iMisslePath.GetC ) then
     begin
-      IO.addSoundAnimation( iMarkSeq, iMisslePath.GetC, IO.Audio.ResolveSoundID([Iif( iIsHit, 'flesh_bullet_hit', 'concrete_bullet_hit' )]) );
+      IO.addSoundAnimation( iMarkSeq, iMisslePath.GetC, [Iif( iIsHit, 'flesh_bullet_hit', 'concrete_bullet_hit' )] );
       IO.addMarkAnimation(199, iMarkSeq, iMisslePath.GetC, Missiles[iMissile].HitSprite, Iif( iIsHit, LightRed, LightGray ), '*' );
     end;
   end;
@@ -2301,9 +2298,7 @@ begin
 
     iExplosion            := Missiles[iMissile].Explosion;
     iExplosion.Range      := iRadius;
-    if IO.Audio.GetSampleID(aItem.ID+'.explode') > 0
-      then iExplosion.SoundID := aItem.ID
-      else iExplosion.SoundID := Missiles[iMissile].soundID;
+    iExplosion.SoundID    := aItem.ID;
     iExplosion.Damage     := iRoll;
     iExplosion.DamageType := aItem.DamageType;
     iLevel.Explosion( iDelay*(iSteps+(aShotCount*2)), iCoord, iExplosion, aItem, iDirectHit, iDamageMul );

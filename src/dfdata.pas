@@ -249,7 +249,7 @@ type TCellSet = set of Byte;
        Damage    : TDiceRoll;
        DamageType: TDamageType;
        ContentID : Word;
-       SoundID   : string[16];
+       SoundID   : AnsiString;
        Sprite    : TSprite;
      end;
 

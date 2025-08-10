@@ -78,7 +78,7 @@ TLevel = class(TLuaMapNode, ITextMap)
     function isPassable( const aCoord : TCoord2D ) : Boolean; override;
     function isEmpty( const coord : TCoord2D; EmptyFlags : TFlags32 = []) : Boolean; override;
     function cellFlagSet( coord : TCoord2D; Flag : byte) : Boolean;
-    procedure playSound( const aSoundID : DWord; aCoord : TCoord2D; aDelay : DWord = 0 ); overload;
+    procedure playSound( mIDs : array of AnsiString; aCoord : TCoord2D; aDelay : DWord = 0 ); overload;
     procedure playSound( const SoundID : string; coord : TCoord2D ); overload;
     procedure playSound( const BaseID,SoundID : string; coord : TCoord2D ); overload;
     function GetEnemiesVisible : Word;
@@ -281,21 +281,21 @@ begin
   Exit(Flag in Cells[ GetCell( coord ) ].Flags);
 end;
 
-procedure TLevel.playSound( const aSoundID: DWord; aCoord : TCoord2D; aDelay : DWord = 0 );
+procedure TLevel.playSound( mIDs : array of AnsiString; aCoord : TCoord2D; aDelay : DWord = 0 );
 begin
   if aDelay > 0
-   then IO.Audio.QueueSound(aSoundID, aCoord, aDelay)
-   else IO.Audio.PlaySound(aSoundID, aCoord);
+   then IO.Audio.QueueSound(mIDs, aCoord, aDelay)
+   else IO.Audio.PlaySound(mIDs, aCoord);
 end;
 
 procedure TLevel.playSound(const SoundID: string; coord : TCoord2D );
 begin
-  IO.Audio.PlaySound(IO.Audio.ResolveSoundID([SoundID]), coord );
+  IO.Audio.PlaySound([SoundID], coord );
 end;
 
 procedure TLevel.playSound(const BaseID, SoundID: string; coord : TCoord2D );
 begin
-  IO.Audio.PlaySound(IO.Audio.ResolveSoundID([BaseID+'.'+SoundID,SoundID]), coord );
+  IO.Audio.PlaySound([BaseID+'.'+SoundID,SoundID], coord );
 end;
 
 function TLevel.GetEnemiesVisible : Word;
@@ -1605,7 +1605,7 @@ begin
   iLevel := iState.ToObject(1) as TLevel;
   if iState.IsString(3)
     then iLevel.playSound( iState.ToString(2), iState.ToString(3), iState.ToPosition(4) )
-    else iLevel.playSound( IO.Audio.ResolveSoundID( [iState.ToString(2)] ), iState.ToPosition(3), iState.ToInteger(4,0) );
+    else iLevel.playSound( [iState.ToString(2)], iState.ToPosition(3), iState.ToInteger(4,0) );
   Result := 0;
 end;
 

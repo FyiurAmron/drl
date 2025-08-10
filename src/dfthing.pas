@@ -80,16 +80,15 @@ begin
 end;
 
 function TThing.PlaySound( const aSoundID : string; aPosition : TCoord2D; aDelay : Integer = 0 ) : Boolean;
-var iSoundID : Word;
+var IDs : array of AnsiString;
 begin
   if FSoundID = ''
-    then iSoundID := IO.Audio.ResolveSoundID( [ FID+'.'+aSoundID, aSoundID ] )
-    else iSoundID := IO.Audio.ResolveSoundID( [ FID+'.'+aSoundID, FSoundID+'.'+aSoundID, aSoundID ] );
+    then IDs := [ FID+'.'+aSoundID, aSoundID ]
+    else IDs := [ FID+'.'+aSoundID, FSoundID+'.'+aSoundID, aSoundID ];
 
-  if iSoundID = 0 then Exit( False );
   if aDelay > 0
-    then IO.Audio.QueueSound( iSoundID, aPosition, aDelay )
-    else IO.Audio.PlaySound( iSoundID, aPosition );
+    then IO.Audio.QueueSound( IDs, aPosition, aDelay )
+    else IO.Audio.PlaySound( IDs, aPosition );
   Exit( True );
 end;
 

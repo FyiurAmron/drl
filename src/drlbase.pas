@@ -120,7 +120,7 @@ uses  {$IFDEF WINDOWS}Windows,{$ELSE}Unix,{$ENDIF}
      Classes, SysUtils,
      vdebug, viotypes,
      dfmap, dfbeing,
-     drlio, drlgfxio, drltextio, zstream,
+     drlio, drlgfxio, zstream,
      drlspritemap, // remove
      drlplayerview, drlingamemenuview, drlhelpview, drlassemblyview,
      drlpagedview, drlrankupview, drlmainmenuview, drlhudviews, drlmessagesview,

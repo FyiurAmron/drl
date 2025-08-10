@@ -92,7 +92,7 @@ type TDRLIO = class( TIO )
   procedure addKillAnimation( aDuration : DWord; aDelay : DWord; aBeing : TThing ); virtual;
   procedure addMissileAnimation( aDuration : DWord; aDelay : DWord; aSource, aTarget : TCoord2D; aColor : Byte; aPic : Char; aDrawDelay : Word; aSprite : TSprite; aRay : Boolean = False ); virtual; abstract;
   procedure addMarkAnimation( aDuration : DWord; aDelay : DWord; aCoord : TCoord2D; aSprite : TSprite; aColor : Byte; aPic : Char ); virtual; abstract;
-  procedure addSoundAnimation( aDelay : DWord; aPosition : TCoord2D; aSoundID : DWord ); virtual; abstract;
+  procedure addSoundAnimation( aDelay : DWord; aPosition : TCoord2D; mSoundIDs : array of Ansistring ); virtual; abstract;
   procedure addRumbleAnimation( aDelay : DWord; aLow, aHigh : Word; aDuration : DWord ); virtual;
   procedure Explosion( aDelay : Integer; aWhere : TCoord2D; aData : TExplosionData ); virtual;
   procedure PulseBlood( aValue : Single ); virtual;
@@ -276,16 +276,13 @@ var iCoord    : TCoord2D;
     iDistance : Byte;
     iVisible  : boolean;
     iLevel    : TLevel;
-    iSound    : Word;
+    iSound    : Ansistring;
 begin
   iLevel := DRL.Level;
   if not iLevel.isProperCoord( aWhere ) then Exit;
 
-  if aData.SoundID <> '' then
   begin
-    iSound := IO.Audio.ResolveSoundID([aData.SoundID+'.explode',aData.SoundID,'explode']);
-    if iSound <> 0 then
-      IO.addSoundAnimation( aDelay, aWhere, iSound );
+    IO.addSoundAnimation( aDelay, aWhere, [aData.SoundID+'.explode',aData.SoundID,'explode'] );
   end;
 
   if aData.Range > 0 then

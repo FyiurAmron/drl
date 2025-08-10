@@ -14,17 +14,16 @@ uses classes, vgenerics, vrltools, vluaconfig, vdf,
 type TSoundEvent = packed record
        Time    : QWord;
        Coord   : TCoord2D;
-       SoundID : Word;
+       IDs     : array of AnsiString;
      end;
 
 type TAudioEntry = record
-       ID       : Ansistring;
-       Root     : Ansistring;
-       FileName : Ansistring;
+       ID       : AnsiString;
+       Root     : AnsiString;
+       FileName : AnsiString;
        IsMusic  : Boolean;
        DataFile : TVDataFile;
      end;
-
 
 
 type TAudioRegistry   = specialize TGArray< TAudioEntry >;
@@ -37,23 +36,21 @@ type TDRLAudio = class
   procedure Reset;
   procedure Reconfigure;
   procedure Configure( aConfig : TLuaConfig; aReload : Boolean = False );
-  function LoadBindingFile( const aFile, aRoot : Ansistring ) : Boolean;
-  function LoadBindingDataFile( aData : TVDataFile; const aFile, aRoot : Ansistring ) : Boolean;
+  function LoadBindingFile( const aFile, aRoot : AnsiString ) : Boolean;
+  function LoadBindingDataFile( aData : TVDataFile; const aFile, aRoot : AnsiString ) : Boolean;
   procedure Load;
   procedure Update( aMSec : DWord );
-  procedure QueueSound( aSoundID : Word; aCoord : TCoord2D; aDelay : DWord );
-  procedure PlaySound( aSoundID : Word; aCoord : TCoord2D );
-  procedure PlaySound( const mID : Ansistring );
-  procedure PlayMusic( const MusicID : Ansistring; aNotFound : Boolean = False );
-  function ResolveSoundID( const ResolveIDs: array of AnsiString ) : Word;
-  function GetSampleID( const aID: AnsiString ) : Word;
+  procedure QueueSound( IDs : array of AnsiString; aCoord : TCoord2D; aDelay : DWord );
+  procedure PlaySound( const mIDs : array of AnsiString; aCoord : TCoord2D );
+  procedure PlaySound( const mID : AnsiString );
+  procedure PlayMusic( const MusicID : AnsiString; aNotFound : Boolean = False );
   destructor Destroy; override;
 private
   procedure Register( const aID, aFileName : AnsiString; aMusic : Boolean; const aRoot : AnsiString );
   procedure SoundQuery( nkey, nvalue : Variant );
   procedure MusicQuery( nkey, nvalue : Variant );
 private
-  FLastMusic   : Ansistring;
+  FLastMusic   : AnsiString;
   FTime        : QWord;
   FSoundEvents : TSoundEventHeap;
   FCurrentData : TVDataFile;
@@ -133,7 +130,7 @@ begin
   while (not FSoundEvents.isEmpty) and (FSoundEvents.Top.Time <= FTime) do
   begin
     iSoundEvent := FSoundEvents.Pop;
-    PlaySound( iSoundEvent.SoundID, iSoundEvent.Coord );
+    PlaySound( iSoundEvent.IDs, iSoundEvent.Coord );
   end;
 end;
 
@@ -156,7 +153,7 @@ begin
   end;
 end;
 
-function TDRLAudio.LoadBindingFile( const aFile, aRoot : Ansistring ) : Boolean;
+function TDRLAudio.LoadBindingFile( const aFile, aRoot : AnsiString ) : Boolean;
 var iState : TLuaConfig;
 begin
   FCurrentData := nil;
@@ -173,7 +170,7 @@ begin
   Result := True;
 end;
 
-function TDRLAudio.LoadBindingDataFile( aData : TVDataFile; const aFile, aRoot : Ansistring ) : Boolean;
+function TDRLAudio.LoadBindingDataFile( aData : TVDataFile; const aFile, aRoot : AnsiString ) : Boolean;
 var iStream : TStream;
     iSize   : Integer;
     iState  : TLuaConfig;
@@ -202,8 +199,8 @@ var iCount   : DWord;
     iProgMod : Single;
     iDataFile: TVDataFile;
 
-  procedure RegisterMusic( const aPath : Ansistring; aID : Ansistring );
-  var iFileName : Ansistring;
+  procedure RegisterMusic( const aPath : AnsiString; aID : AnsiString );
+  var iFileName : AnsiString;
       iStream   : TStream;
   begin
     if iDataFile <> nil then
@@ -223,8 +220,8 @@ var iCount   : DWord;
     Sound.RegisterMusic( aPath, aID );
   end;
 
-  procedure RegisterSample( const aPath : Ansistring; aID : Ansistring );
-  var iFileName : Ansistring;
+  procedure RegisterSample( const aPath : AnsiString; aID : AnsiString );
+  var iFileName : AnsiString;
       iStream   : TStream;
   begin
     if iDataFile <> nil then
@@ -310,17 +307,20 @@ begin
   end;
 end;
 
-procedure TDRLAudio.QueueSound( aSoundID : Word; aCoord : TCoord2D; aDelay : DWord );
+procedure TDRLAudio.QueueSound( IDs : array of AnsiString; aCoord : TCoord2D; aDelay : DWord );
 var
   iSoundEvent : TSoundEvent;
+  i : Integer;
 begin
   iSoundEvent.Coord   := aCoord;
-  iSoundEvent.SoundID := aSoundID;
+  SetLength(iSoundEvent.IDs, Length(IDs));
+  for i := Low(IDs) to High(IDs) do
+    iSoundEvent.IDs[i] := IDs[i];
   iSoundEvent.Time    := FTime + aDelay;
   FSoundEvents.Insert( iSoundEvent );
 end;
 
-procedure TDRLAudio.PlaySound( const mID: Ansistring );
+procedure TDRLAudio.PlaySound( const mID: AnsiString );
 begin
   INTEROP( CB_SOUND, 'play', mID );
   {$IFNDEF DISABLE_SOUND}
@@ -328,7 +328,20 @@ begin
   {$ENDIF}
 end;
 
-procedure TDRLAudio.PlaySound( aSoundID : Word; aCoord : TCoord2D );
+function JoinAnsi(const Arr: array of AnsiString; const Delim: string): string;
+var
+  i: Integer;
+begin
+  Result := '';
+  for i := Low(Arr) to High(Arr) do
+  begin
+    if i > Low(Arr) then
+      Result := Result + Delim;
+    Result := Result + string(Arr[i]);
+  end;
+end;
+
+procedure TDRLAudio.PlaySound( const mIDs: array of AnsiString; aCoord : TCoord2D );
 var iVolume     : Byte;
     iPan        : Byte;
     iDist       : Word;
@@ -345,7 +358,7 @@ begin
 
   iPan := Clamp((aCoord.x-iPos.x) * 15,-128,127)+128;
 
-  INTEROP( CB_SOUND, 'play', IntToStr(aSoundID) + ',' + IntToStr(iVolume) + ',' + IntToStr(iPan) );
+  INTEROP( CB_SOUND, 'play', ''+JoinAnsi(mIDs,'?') + ',' + IntToStr(iVolume) + ',' + IntToStr(iPan) );
   // TODO simplify the interface and pass just sound source coords
   // - emit player pos update CB event just before for 100% pos accuracy
   {$IFNDEF DISABLE_SOUND}
@@ -353,7 +366,7 @@ begin
   {$ENDIF}
 end;
 
-
+{
 function TDRLAudio.ResolveSoundID(const ResolveIDs: array of AnsiString): Word;
 var c : DWord;
 begin
@@ -372,6 +385,7 @@ begin
   if (not Option_Sound) or SoundOff then Exit(0);
   Exit( Sound.GetSampleID( aID ) );
 end;
+}
 
 procedure TDRLAudio.PlayMusic(const MusicID : Ansistring; aNotFound : Boolean = False );
 begin

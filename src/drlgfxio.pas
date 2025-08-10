@@ -39,7 +39,7 @@ type
     procedure addKillAnimation( aDuration : DWord; aDelay : DWord; aBeing : TThing ); override;
     procedure addMissileAnimation( aDuration : DWord; aDelay : DWord; aSource, aTarget : TCoord2D; aColor : Byte; aPic : Char; aDrawDelay : Word; aSprite : TSprite; aRay : Boolean = False ); override;
     procedure addMarkAnimation( aDuration : DWord; aDelay : DWord; aCoord : TCoord2D; aSprite : TSprite; aColor : Byte; aPic : Char ); override;
-    procedure addSoundAnimation( aDelay : DWord; aPosition : TCoord2D; aSoundID : DWord ); override;
+    procedure addSoundAnimation( aDelay : DWord; aPosition : TCoord2D; mSoundIDs : array of Ansistring ); override;
     procedure addRumbleAnimation( aDelay : DWord; aLow, aHigh : Word; aDuration : DWord ); override;
     function getUIDPosition( aUID : TUID; var aPosition : TVec2i ) : Boolean;
     procedure PulseBlood( aValue : Single ); override;
@@ -511,11 +511,10 @@ begin
   FAnimations.addAnimation( TGFXMarkAnimation.Create(aDuration, aDelay, aCoord, aSprite ) )
 end;
 
-procedure TDRLGFXIO.addSoundAnimation(aDelay: DWord; aPosition: TCoord2D; aSoundID: DWord);
+procedure TDRLGFXIO.addSoundAnimation(aDelay: DWord; aPosition: TCoord2D; mSoundIDs: array of Ansistring);
 begin
   if DRL.State <> DSPlaying then Exit;
-  if aSoundID > 0 then
-    FAnimations.addAnimation( TSoundEventAnimation.Create( aDelay, aPosition, aSoundID ) )
+  FAnimations.addAnimation( TSoundEventAnimation.Create( aDelay, aPosition, mSoundIDs ) )
 end;
 
 procedure TDRLGFXIO.addRumbleAnimation( aDelay : DWord; aLow, aHigh : Word; aDuration : DWord );
