@@ -18,6 +18,8 @@ TThing = class( TLuaEntityNode )
   constructor CreateFromStream( Stream : TStream ); override;
   function PlaySound( const aSoundID : string; aDelay : Integer = 0 ) : Boolean;
   function PlaySound( const aSoundID : string; aPosition : TCoord2D; aDelay : Integer = 0 ) : Boolean;
+  function PlaySound( aSoundIDs : array of string; aDelay : Integer = 0 ) : Boolean;
+  function PlaySound( aSoundIDs : array of string; aPosition : TCoord2D; aDelay : Integer = 0 ) : Boolean;
   function CallHook( aHook : Byte; const aParams : array of Const ) : Boolean; virtual;
   function CallHookCheck( aHook : Byte; const aParams : array of Const ) : Boolean; virtual;
   function CallHookCan( aHook : Byte; const aParams : array of Const ) : Boolean; virtual;
@@ -76,15 +78,43 @@ end;
 
 function TThing.PlaySound( const aSoundID : string; aDelay : Integer = 0 ) : Boolean;
 begin
-  Exit( PlaySound( aSoundID, FPosition, aDelay ) );
+  Exit( PlaySound( [aSoundID], FPosition, aDelay ) );
 end;
 
 function TThing.PlaySound( const aSoundID : string; aPosition : TCoord2D; aDelay : Integer = 0 ) : Boolean;
-var IDs : array of AnsiString;
 begin
-  if FSoundID = ''
-    then IDs := [ FID+'.'+aSoundID, 'generic.'+aSoundID ]
-    else IDs := [ FID+'.'+aSoundID, FSoundID+'.'+aSoundID, 'generic.'+aSoundID ];
+  Exit( PlaySound( [aSoundID], aPosition, aDelay ) );
+end;
+
+function TThing.PlaySound( aSoundIDs : array of string; aDelay : Integer = 0 ) : Boolean;
+begin
+  Exit( PlaySound( aSoundIDs, FPosition, aDelay ) );
+end;
+
+function TThing.PlaySound( aSoundIDs : array of string; aPosition : TCoord2D; aDelay : Integer = 0 ) : Boolean;
+var IDs : array of AnsiString;
+    i, j: Integer;
+begin
+  SetLength(IDs, Length(aSoundIDs) * 3);
+  j := 0;
+  for i := Low(aSoundIDs) to High(aSoundIDs) do
+    begin
+      IDs[j] := FID+'.'+aSoundIDs[i];
+      j := j + 1;
+    end;
+  if FID <> '' then
+    begin
+      for i := Low(aSoundIDs) to High(aSoundIDs) do
+        begin
+          IDs[j] := FSoundID+'.'+aSoundIDs[i];
+          j := j + 1;
+        end;
+    end;
+  for i := Low(aSoundIDs) to High(aSoundIDs) do
+  begin
+    IDs[j] := 'generic.'+aSoundIDs[i];
+    j := j + 1;
+  end;
 
   if aDelay > 0
     then IO.Audio.QueueSound( IDs, aPosition, aDelay )
