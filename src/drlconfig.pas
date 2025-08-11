@@ -50,7 +50,6 @@ begin
   Option_InvFullDrop      := Configure('InvFullDrop',Option_InvFullDrop);
   Option_MortemArchive    := Configure('MortemArchive',Option_MortemArchive);
   Option_MenuReturn       := Configure('MenuReturn',Option_MenuReturn);
-  Option_SoundEquipPickup := Configure('SoundEquipPickup',Option_SoundEquipPickup);
   Option_ColoredInventory := Configure('ColoredInventory',Option_ColoredInventory);
   Option_LockBreak        := Configure('LockBreak',Option_LockBreak);
   Option_LockClose        := Configure('LockClose',Option_LockClose);

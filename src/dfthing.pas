@@ -83,8 +83,8 @@ function TThing.PlaySound( const aSoundID : string; aPosition : TCoord2D; aDelay
 var IDs : array of AnsiString;
 begin
   if FSoundID = ''
-    then IDs := [ FID+'.'+aSoundID, aSoundID ]
-    else IDs := [ FID+'.'+aSoundID, FSoundID+'.'+aSoundID, aSoundID ];
+    then IDs := [ FID+'.'+aSoundID, 'generic.'+aSoundID ]
+    else IDs := [ FID+'.'+aSoundID, FSoundID+'.'+aSoundID, 'generic.'+aSoundID ];
 
   if aDelay > 0
     then IO.Audio.QueueSound( IDs, aPosition, aDelay )

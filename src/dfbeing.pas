@@ -615,9 +615,7 @@ begin
 
   Inv.Wear( iWeapon );
 
-  if Option_SoundEquipPickup
-    then iWeapon.PlaySound( 'pickup', FPosition )
-    else iWeapon.PlaySound( 'reload', FPosition );
+  iWeapon.PlaySound( ['pickup', 'reload'], FPosition ); // equip weapon sfx
 
   if not ( BF_QUICKSWAP in FFlags )
      then Exit( Success( 'You prepare the %s!',[ iWeapon.Name ], 1000 ) )
@@ -632,9 +630,7 @@ begin
   Inv.EqSwap( efWeapon, efWeapon2 );
 
   if Inv.Slot[ efWeapon ] <> nil then
-    if Option_SoundEquipPickup
-      then Inv.Slot[ efWeapon ].PlaySound( 'pickup', FPosition )
-      else Inv.Slot[ efWeapon ].PlaySound( 'reload', FPosition );
+    Inv.Slot[ efWeapon ].PlaySound( ['pickup', 'reload'], FPosition ); // equip weapon sfx
 
   if ( BF_QUICKSWAP in FFlags ) or ( canDualWield )
     then Exit( Success( 'You swap your weapons instantly!',[] ) )
@@ -703,9 +699,7 @@ begin
   if not FInv.Contains( aItem ) then Exit( False );
   iWeapon := aItem.isWeapon;
 
-  if Option_SoundEquipPickup
-    then aItem.PlaySound( 'pickup', FPosition )
-    else aItem.PlaySound( 'reload', FPosition );
+  aItem.PlaySound( 'pickup', FPosition );
 
   if FInv.DoWear( aItem ) then
   begin
@@ -725,9 +719,7 @@ begin
   if not FInv.Contains( aItem ) then Exit( False );
   iWeapon := aItem.isWeapon;
 
-  if Option_SoundEquipPickup
-    then aItem.PlaySound( 'pickup', FPosition )
-    else aItem.PlaySound( 'reload', FPosition );
+  aItem.PlaySound( ['reload', 'pickup'], FPosition ); // item or weapon
 
   if FInv.DoWear( aItem, aSlot ) then
   begin
@@ -948,7 +940,7 @@ begin
     iAmount := Inv.AddAmmo(iItem.NID,iItem.Ammo);
     if iAmount <> iItem.Ammo then
     begin
-      iItem.playSound( 'pickup', FPosition );
+      iItem.playSound( 'pickup', FPosition ); // item
       CallHook( Hook_OnPickUpItem, [iItem] );
       iName := iItem.Name;
       iCount := iItem.Ammo-iAmount;
@@ -970,7 +962,7 @@ begin
   if Inv.isFull then Exit( Fail( 'You don''t have enough room in your backpack.', [] ) );
 
   if not iItem.CallHookCheck(Hook_OnPickupCheck,[Self]) then  Exit( False );
-  iItem.PlaySound('pickup', FPosition );
+  iItem.PlaySound( 'pickup', FPosition ); // item
   if isPlayer then IO.Msg('You picked up %s.',[iItem.GetName(false)]);
   Inv.Add(iItem);
   CallHook( Hook_OnPickUpItem, [iItem] );
@@ -1037,7 +1029,7 @@ begin
 
   if isEquip then
   begin
-    aItem.PlaySound( 'pickup', FPosition );
+    aItem.PlaySound( ['pickup', 'reload'], FPosition );
     Inv.setSlot( iSlot, aItem );
   end;
   if isUse then

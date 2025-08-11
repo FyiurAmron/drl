@@ -1,5 +1,7 @@
 * move audio to callbacks
     - handle music via callbacks: DONE
+    - handle SFX via callbacks: in progress (panning/dist etc.)
+* change handling of multi-shot weapon SFX
 * refactor to not use "WAD"s
 * move logging to callbacks
 * move GFX to callbacks

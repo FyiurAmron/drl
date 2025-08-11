@@ -174,7 +174,6 @@ const
   Option_InvFullDrop      : Boolean = False;
   Option_MortemArchive    : Boolean = False;
   Option_MenuReturn       : Boolean = False;
-  Option_SoundEquipPickup : Boolean = False;
   Option_ColoredInventory : Boolean = True;
   Option_LockBreak        : Boolean = True;
   Option_LockClose        : Boolean = True;
