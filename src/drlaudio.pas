@@ -50,9 +50,9 @@ end;
 
 implementation
 
-uses sysutils, math,
-     vdebug, vutil, vmath,
-     drlio, drlconfiguration, dfplayer, dfdata;
+uses sysutils,
+     vdebug, vutil,
+     drlconfiguration, dfplayer, dfdata;
 
 function DRLSoundEventCompare( const Item1, Item2: TSoundEvent ): Integer;
 begin
@@ -131,25 +131,9 @@ begin
 end;
 
 procedure TDRLAudio.PlaySound( const mIDs: array of AnsiString; aCoord : TCoord2D );
-var iVolume     : Byte;
-    iPan        : Byte;
-    iDist       : Word;
-    iPos        : TCoord2D;
 begin
-  if (not Option_Sound) or SoundOff or ( Setting_SoundVolume = 0 ) then Exit;
-
-  iPos := Player.Position;
-
-  iDist := Distance(aCoord,iPos);
-  if iDist <= 1 then iVolume := 127 else
-                    iVolume := Clamp((25 - iDist) * 6,0,127);
-  if iVolume = 0 then Exit;
-
-  iPan := Clamp((aCoord.x-iPos.x) * 15,-128,127)+128;
-
-  INTEROP( CB_SOUND, 'play', ''+JoinAnsi(mIDs,'?') + ',' + IntToStr(iVolume) + ',' + IntToStr(iPan) );
-  // TODO simplify the interface and pass just sound source coords
-  // - emit player pos update CB event just before for 100% pos accuracy
+  INTEROP( CB_APP, 'pos', IntToStr(Player.Position.x) + '?' + IntToStr(Player.Position.y) );
+  INTEROP( CB_SOUND, 'play', ''+JoinAnsi(mIDs,'?') + ',' + IntToStr(aCoord.x) + '?' + IntToStr(aCoord.y) );
 end;
 
 procedure TDRLAudio.PlayMusic(const MusicID : Ansistring; aNotFound : Boolean = False );
