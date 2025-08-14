@@ -37,12 +37,9 @@ begin
   Option_Graphics         := Configure('Graphics',Option_Graphics);
   Option_Blending         := Configure('Blending',Option_Blending);
   Option_SaveOnCrash      := Configure('SaveOnCrash',Option_SaveOnCrash);
-  Option_SoundEngine      := Configure('SoundEngine',Option_SoundEngine);
 
   Option_HighASCII        := Configure('AllowHighAscii',Option_HighASCII);
   Option_AlwaysName       := Configure('AlwaysName',Option_AlwaysName);
-  Option_Music            := Configure('GameMusic',Option_Music);
-  Option_Sound            := Configure('GameSound',Option_Sound);
   Option_BlindMode        := Configure('BlindMode',Option_BlindMode);
   Option_ClearMessages    := Configure('ClearMessages',Option_ClearMessages);// TODO : Reimplement
   Option_MorePrompt       := Configure('MorePrompt',Option_MorePrompt);
@@ -67,23 +64,6 @@ begin
   Option_MaxRun           := Configure('MaxRun',Option_MaxRun);
   Option_MaxWait          := Configure('MaxWait',Option_MaxWait);
   Option_ForceRaw         := Configure('ForceRaw',GodMode);
-
-  if (not Option_Music) and (not Option_Sound) then Option_SoundEngine := 'NONE';
-  if Option_SoundEngine = 'DEFAULT' then
-     Option_SoundEngine := {$IFDEF WINDOWS}'FMOD'{$ELSE}'SDL'{$ENDIF};
-  if (Option_SoundEngine <> 'FMOD') and (Option_SoundEngine <> 'SDL') then
-     Option_SoundEngine := 'NONE';
-  if Option_SoundEngine = 'NONE' then
-  begin
-    Option_Music     := False;
-    Option_Sound     := False;
-  end
-  else
-
-  begin
-    if (Option_Graphics <> 'TILES') and (Option_Graphics <> 'CONSOLE') then
-      Option_Graphics := 'TILES';
-  end;
 
   TDRLIO.RegisterLuaAPI( State );
 end;

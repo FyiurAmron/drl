@@ -148,7 +148,6 @@ const
   Setting_HideHints        : Boolean = False;
   Setting_EmptyConfirm     : Boolean = False;
   Setting_UnlockAll        : Boolean = False;
-  Setting_MenuSound        : Boolean = False;
   Setting_MouseEdgePan     : Boolean = False;
   Setting_Mouse            : Boolean = True;
   Setting_GamepadRumble    : Boolean = True;
@@ -165,8 +164,6 @@ const
 
 const
   Option_HighASCII        : Boolean = {$IFDEF WINDOWS}True{$ELSE}False{$ENDIF};
-  Option_Music            : Boolean = False;
-  Option_Sound            : Boolean = False;
   Option_BlindMode        : Boolean = False;
   Option_ClearMessages    : Boolean = False;
   Option_MorePrompt       : Boolean = True;
@@ -185,7 +182,6 @@ const
   Option_Graphics         : string = 'TILES';
   Option_Blending         : Boolean = False;
   Option_SaveOnCrash      : Boolean = True;
-  Option_SoundEngine      : string = 'DEFAULT';
   Option_AlwaysName       : string = '';
   Option_TimeStamp        : string = 'yyyy/mm/dd hh:nn:ss';
   Option_PlayerBackups    : DWord = 7;
@@ -206,12 +202,6 @@ var
   HARDSPRITE_GRID             : DWord = 0;
   HARDSPRITE_DECAL_BLOOD      : array[0..3] of DWord = ( 0,0,0,0 );
   HARDSPRITE_DECAL_WALL_BLOOD : array[0..3] of DWord = ( 0,0,0,0 );
-
-var
-  SoundOff  : boolean = False;
-  MusicOff  : boolean = False;
-
-  // 0-25 range
 
 const
 {$include ../bin/data/core/commands.lua}

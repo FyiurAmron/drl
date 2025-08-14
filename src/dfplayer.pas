@@ -719,7 +719,7 @@ begin
   State.Init(L);
   Being := State.ToObject(1) as TBeing;
   if not (Being is TPlayer) then Exit(0);
-  IO.FadeOut(1.0);
+  IO.FadeOut();
   DRL.SetState( DSFinished );
   DRL.GameWon := True;
   Result := 0;

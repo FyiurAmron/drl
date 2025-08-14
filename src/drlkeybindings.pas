@@ -85,30 +85,14 @@ type TInputKey = (
   INPUT_QUICKKEY_7,
   INPUT_QUICKKEY_8,
   INPUT_QUICKKEY_9,
-  INPUT_SOUNDTOGGLE,
-  INPUT_MUSICTOGGLE,
   INPUT_TOGGLEGRID,
   INPUT_EXAMINENPC,
   INPUT_EXAMINEITEM,
 
   // Legacy keybindings
-  INPUT_LEGACYOPEN,
-  INPUT_LEGACYCLOSE,
-  INPUT_LEGACYDROP,
-  INPUT_LEGACYUSE,
   INPUT_LEGACYSAVE,
-
-  // Compat keys, remove?
   INPUT_QUIT,
-  INPUT_HARDQUIT,
-
-  // Compat keys, remove?
-  INPUT_MMOVE,
-  INPUT_MRIGHT,
-  INPUT_MMIDDLE,
-  INPUT_MLEFT,
-  INPUT_MSCRUP,
-  INPUT_MSCRDOWN
+  INPUT_HARDQUIT
 );
 
 type TInputKeySet   = set of TInputKey;
@@ -198,30 +182,14 @@ const KeyInfo : array[TInputKey] of TKeyInfoEntry = (
     (ID: 'input_quickkey_7';     Group: 'keybindings_helper';       Default: VKEY_7;                Name: 'Quickkey 7';       Description: 'Mark and use quickslot 7.'),
     (ID: 'input_quickkey_8';     Group: 'keybindings_helper';       Default: VKEY_8;                Name: 'Quickkey 8';       Description: 'Mark and use quickslot 8.'),
     (ID: 'input_quickkey_9';     Group: 'keybindings_helper';       Default: VKEY_9;                Name: 'Quickkey 9';       Description: 'Mark and use quickslot 9.'),
-    (ID: 'input_soundtoggle';    Group: 'keybindings_helper';       Default: 0;                     Name: 'Sound toggle';     Description: 'Quickly toggle sound on and off.'),
-    (ID: 'input_musictoggle';    Group: 'keybindings_helper';       Default: 0;                     Name: 'Music toggle';     Description: 'Quickly toggle music on and off.'),
     (ID: 'input_togglegrid';     Group: 'keybindings_helper';       Default: 0;                     Name: 'Toggle grid visibility'; Description: 'Toggle visibility of helper grid overlay.'),
     (ID: 'input_examinenpc';     Group: 'keybindings_helper';       Default: 0;                     Name: 'Examine NPCs';     Description: '(blind mode) List in message box all visible NPCs.'),
     (ID: 'input_examineitem';    Group: 'keybindings_helper';       Default: 0;                     Name: 'Examine Items';    Description: '(blind mode) List in message box all visible Items.'),
 
     // Legacy keybindings
-    (ID: 'input_legacyopen';     Group: 'keybindings_legacy';       Default: 0;                     Name: 'Open door';        Description: 'Dedicated open door key. Action key is the default method.'),
-    (ID: 'input_legacyclose';    Group: 'keybindings_legacy';       Default: 0;                     Name: 'Close door';       Description: 'Dedicated close door key. Action key is the default method.'),
-    (ID: 'input_legacydrop';     Group: 'keybindings_legacy';       Default: 0;                     Name: 'Drop item';        Description: 'Dedicated drop item key, opening inventory to select item to drop.'),
-    (ID: 'input_legacyuse';      Group: 'keybindings_legacy';       Default: 0;                     Name: 'Use item';         Description: 'Dedicated use item key, opening inventory to select item to use.'),
     (ID: 'input_legacysave';     Group: 'keybindings_legacy';       Default: 0;                     Name: 'Save game';        Description: 'Dedicated save game key.'),
-
-    // compat keys
     (ID: 'input_legacyquit';     Group: 'keybindings_legacy';       Default: 0;                     Name: 'Quit game';        Description: 'Dedicated quit game key.'),
-    (ID: 'input_legacyhardquit'; Group: 'keybindings_legacy';       Default: 0;                     Name: 'Hard quit game';   Description: 'Dedicated hard quit game key (no confirmation).'),
-
-    // compat keys
-    (ID: '';                     Group: '';                        Default: 0;                     Name: '';                 Description: ''),
-    (ID: '';                     Group: '';                        Default: 0;                     Name: '';                 Description: ''),
-    (ID: '';                     Group: '';                        Default: 0;                     Name: '';                 Description: ''),
-    (ID: '';                     Group: '';                        Default: 0;                     Name: '';                 Description: ''),
-    (ID: '';                     Group: '';                        Default: 0;                     Name: '';                 Description: ''),
-    (ID: '';                     Group: '';                        Default: 0;                     Name: '';                 Description: '')
+    (ID: 'input_legacyhardquit'; Group: 'keybindings_legacy';       Default: 0;                     Name: 'Hard quit game';   Description: 'Dedicated hard quit game key (no confirmation).')
 );
 implementation
 

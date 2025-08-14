@@ -144,7 +144,7 @@ function TLookModeView.HandleInput( aInput : TInputKey ) : Boolean;
 var iLevel : TLevel;
     iDir   : TDirection;
 begin
-  if aInput in [ INPUT_ESCAPE, INPUT_MRIGHT, INPUT_QUIT, INPUT_HARDQUIT ] then
+  if aInput in [ INPUT_ESCAPE, INPUT_QUIT, INPUT_HARDQUIT ] then
   begin
     IO.FinishTargeting;
     FFinished := true;
@@ -152,7 +152,6 @@ begin
   end;
 
   if (aInput = INPUT_TOGGLEGRID) then SpriteMap.ToggleGrid;
-  if aInput in [ INPUT_MMOVE, INPUT_MRIGHT, INPUT_MLEFT ] then FTarget := IO.MTarget;
   iLevel := DRL.Level;
   if aInput <> INPUT_MORE then
   begin
@@ -163,7 +162,7 @@ begin
       UpdateTarget;
     end;
    end;
-   if (aInput in [ INPUT_MORE, INPUT_MLEFT ]) and iLevel.isVisible( FTarget ) then
+   if (aInput in [ INPUT_MORE ]) and iLevel.isVisible( FTarget ) then
    begin
      with iLevel do
        if Being[FTarget] <> nil then
@@ -203,7 +202,7 @@ end;
 
 function TDirectionQueryLayer.HandleInput( aInput : TInputKey ) : Boolean;
 begin
-  if aInput in [ INPUT_ESCAPE, INPUT_MRIGHT, INPUT_QUIT, INPUT_HARDQUIT ] then
+  if aInput in [ INPUT_ESCAPE, INPUT_QUIT, INPUT_HARDQUIT ] then
   begin
     FFinished := True;
     Exit( True );
@@ -290,7 +289,7 @@ end;
 
 function TMoreLayer.HandleInput( aInput : TInputKey ) : Boolean;
 begin
-  if aInput in [ INPUT_OK, INPUT_MLEFT, INPUT_QUIT, INPUT_HARDQUIT ] then
+  if aInput in [ INPUT_OK, INPUT_QUIT, INPUT_HARDQUIT ] then
     FFinished := True;
   Exit( True );
 end;
@@ -344,7 +343,7 @@ var iDir        : TDirection;
     iDist       : Byte;
     iTargetLine : TVisionRay;
 begin
-  if aInput in [ INPUT_ESCAPE, INPUT_MRIGHT, INPUT_QUIT, INPUT_HARDQUIT ] then
+  if aInput in [ INPUT_ESCAPE, INPUT_QUIT, INPUT_HARDQUIT ] then
   begin
     Finalize;
     Exit( True );
@@ -357,25 +356,6 @@ begin
     UpdateTarget;
   end;
 
-  if aInput in [ INPUT_MMOVE, INPUT_MRIGHT, INPUT_MLEFT ] then
-  begin
-    FTarget := IO.MTarget;
-    iDist   := Distance( FTarget, FPosition );
-    if FLimitRange and ( iDist > FRange - 1 ) then
-    begin
-      iDist := 0;
-      iTargetLine.Init( DRL.Level, FPosition, FTarget);
-      while iDist < (FRange - 1) do
-      begin
-        iTargetLine.Next;
-        iDist := Distance( iTargetLine.GetSource, iTargetLine.GetC );
-      end;
-      if Distance(iTargetLine.GetSource, iTargetLine.GetC ) > FRange-1
-        then FTarget := iTargetLine.prev
-        else FTarget := iTargetLine.GetC;
-    end;
-    UpdateTarget;
-  end;
   if aInput in INPUT_MOVE then
   begin
     iDir := InputDirection( aInput );
@@ -390,7 +370,7 @@ begin
     UpdateTarget;
   end;
 
-  if aInput in [ INPUT_FIRE, INPUT_ALTFIRE, INPUT_TARGET, INPUT_ALTTARGET, INPUT_MLEFT ] then
+  if aInput in [ INPUT_FIRE, INPUT_ALTFIRE, INPUT_TARGET, INPUT_ALTTARGET ] then
     HandleFire;
 
   Exit( True );
@@ -550,17 +530,14 @@ end;
 
 function TScrollSwapLayer.HandleInput( aInput : TInputKey ) : Boolean;
 begin
-  if aInput in [ INPUT_MRIGHT, INPUT_ESCAPE, INPUT_QUIT, INPUT_HARDQUIT ] then
+  if aInput in [ INPUT_ESCAPE, INPUT_QUIT, INPUT_HARDQUIT ] then
   begin
     IO.HintOverlay := '';
     FFinished := True;
     Exit( True );
   end;
 
-  if aInput = INPUT_MSCRUP   then if FIndex = 0 then FIndex := FArray.Size-1 else FIndex -= 1;
-  if aInput = INPUT_MSCRDOWN then FIndex := (FIndex + 1) mod FArray.Size;
-
-  if aInput in [INPUT_MLEFT, INPUT_OK ] then
+  if aInput in [ INPUT_OK ] then
   begin
     IO.HintOverlay := '';
     FFinished      := True;

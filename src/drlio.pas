@@ -1079,25 +1079,11 @@ begin
   begin
     if not Setting_Mouse then Exit( INPUT_NONE );
     FMTarget := SpriteMap.DevicePointToCoord( aEvent.MouseMove.Pos );
-    if DRL.Level <> nil then
-      if DRL.Level.isProperCoord( FMTarget ) then
-        Exit( INPUT_MMOVE );
   end;
   if aEvent.EType = VEVENT_MOUSEDOWN then
   begin
     if not Setting_Mouse then Exit( INPUT_NONE );
     FMTarget := SpriteMap.DevicePointToCoord( aEvent.Mouse.Pos );
-    if DRL.Level <> nil then
-      if DRL.Level.isProperCoord( FMTarget ) then
-      begin
-        case aEvent.Mouse.Button of
-          VMB_BUTTON_LEFT     : Exit( INPUT_MLEFT );
-          VMB_BUTTON_MIDDLE   : Exit( INPUT_MMIDDLE );
-          VMB_BUTTON_RIGHT    : Exit( INPUT_MRIGHT );
-          VMB_WHEEL_UP        : Exit( INPUT_MSCRUP );
-          VMB_WHEEL_DOWN      : Exit( INPUT_MSCRDOWN );
-        end;
-      end;
   end;
   if aEvent.EType = VEVENT_KEYDOWN then
   begin

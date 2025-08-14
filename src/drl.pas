@@ -30,7 +30,7 @@ program drl;
 uses SysUtils,
      {$IFDEF HEAPTRACE} heaptrc, {$ENDIF}
      {$IFDEF WINDOWS}   windows, {$ENDIF}
-     vdebug, drlbase, vlog, vutil, vos, vparams,
+     vdebug, drlbase, vlog, vutil, vparams,
      dfdata, drlio, drlconfig, drlconfiguration,
      callbacks;
 

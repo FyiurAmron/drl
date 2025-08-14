@@ -671,13 +671,11 @@ end;
 
 procedure TMainMenuView.OnCancel;
 begin
-  if (not Option_Sound) or ( not Setting_MenuSound ) then Exit;
   IO.Audio.PlaySound('menu.cancel');
 end;
 
 procedure SoundCallback( aEvent : TTIGSoundEvent; aParam : Pointer );
 begin
-  if (not Option_Sound) or ( not Setting_MenuSound ) then Exit;
   case aEvent of
     VTIG_SOUND_CHANGE : IO.Audio.PlaySound('menu.change');
     VTIG_SOUND_ACCEPT : IO.Audio.PlaySound('menu.pick');

@@ -370,7 +370,6 @@ begin
   Setting_GamepadRumble    := Configuration.GetBoolean( 'enable_rumble' );
   Setting_MouseEdgePan     := Configuration.GetBoolean( 'mouse_edge_pan' );
   Setting_UnlockAll        := Configuration.GetBoolean( 'unlock_all' );
-  Setting_MenuSound        := Configuration.GetBoolean( 'menu_sound' );
   Setting_GroupMessages    := Configuration.GetBoolean( 'group_messages' );
   Setting_ItemDropAnimation:= Configuration.GetBoolean( 'item_drop_animation' );
   Setting_Fade             := Configuration.GetBoolean( 'fade_fx' );
@@ -422,8 +421,6 @@ begin
     INPUT_TARGET     : Exit( HandleFireCommand( False, False, False, False ) );
     INPUT_ALTTARGET  : Exit( HandleFireCommand( True, False, False, False ) );
     INPUT_ACTION     : Exit( HandleActionCommand( INPUT_ACTION ) );
-    INPUT_LEGACYOPEN : Exit( HandleActionCommand( INPUT_LEGACYOPEN ) );
-    INPUT_LEGACYCLOSE: Exit( HandleActionCommand( INPUT_LEGACYCLOSE ) );
 //    INPUT_QUICKKEY_0 : Exit( HandleCommand( TCommand.Create( COMMAND_QUICKKEY, 'chainsaw' ) ) );
     INPUT_QUICKKEY_1 : Exit( HandleCommand( TCommand.Create( COMMAND_QUICKKEY, '1' ) ) );
     INPUT_QUICKKEY_2 : Exit( HandleCommand( TCommand.Create( COMMAND_QUICKKEY, '2' ) ) );
@@ -470,18 +467,6 @@ begin
       if ( iItem <> nil ) and ( iItem.isLever ) then
         Exit( HandleCommand( TCommand.Create( COMMAND_USE, iItem ) ) );
     end;
-  end;
-
-  if ( aInput = INPUT_LEGACYOPEN ) then
-  begin
-    iID := 'open';
-    iFlag := CF_OPENABLE;
-  end;
-
-  if ( aInput = INPUT_LEGACYCLOSE ) then
-  begin
-    iID := 'close';
-    iFlag := CF_CLOSABLE;
   end;
 
   iCount := 0;
@@ -1086,8 +1071,6 @@ begin
       INPUT_INVENTORY  : begin FPlayerView := IO.PushLayer( TPlayerView.Create( PLAYERVIEW_INVENTORY ) ); Exit; end;
       INPUT_EQUIPMENT  : begin FPlayerView := IO.PushLayer( TPlayerView.Create( PLAYERVIEW_EQUIPMENT ) ); Exit; end;
       INPUT_ASSEMBLIES : begin IO.PushLayer( TAssemblyView.Create ); Exit; end;
-      INPUT_LEGACYUSE  : begin FPlayerView := IO.PushLayer( TPlayerView.CreateCommand( COMMAND_USE ) ); Exit; end;
-      INPUT_LEGACYDROP : begin FPlayerView := IO.PushLayer( TPlayerView.CreateCommand( COMMAND_DROP ) ); Exit; end;
       INPUT_UNLOAD     : begin HandleUnloadCommand( nil ); Exit; end;
 
       INPUT_MESSAGES   : begin IO.PushLayer( TMessagesView.Create( IO.MsgGetRecent ) ); Exit; end;
@@ -1112,13 +1095,6 @@ begin
       INPUT_EXAMINENPC   : begin Player.ExamineNPC; Exit; end;
       INPUT_EXAMINEITEM  : begin Player.ExamineItem; Exit; end;
       INPUT_TOGGLEGRID   : begin SpriteMap.ToggleGrid; Exit; end;
-      INPUT_SOUNDTOGGLE  : begin SoundOff := not SoundOff; Exit; end;
-      INPUT_MUSICTOGGLE  : begin
-                               MusicOff := not MusicOff;
-                               if MusicOff then IO.Audio.PlayMusic('')
-                                           else IO.Audio.PlayMusic(Iif( FLevel.Music_ID <> '', FLevel.Music_ID, FLevel.ID ));
-                               Exit;
-                             end;
     end;
     Exit( Action( iInput ) );
   end
