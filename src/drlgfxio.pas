@@ -63,7 +63,7 @@ type
 
     // Fade control
     procedure FadeIn( aForce : Boolean = False ); override;
-    procedure FadeOut( aTime : Single = 0.5; aWait : Boolean = False ); override;
+    procedure FadeOut( aTime : Single = 0.1; aWait : Boolean = False ); override;
     procedure FadeReset; override;
     procedure FadeWait; override;
 
@@ -600,12 +600,12 @@ begin
     Exit;
   end;
   FFadeTimer     := 0.0;
-  FFadeTime      := 0.5;
+  FFadeTime      := 0.1;
   FFadeDirection := 1;
   if aForce then FFadeAlpha := 0.0;
 end;
 
-procedure TDRLGFXIO.FadeOut( aTime : Single = 0.5; aWait : Boolean = False );
+procedure TDRLGFXIO.FadeOut( aTime : Single = 0.1; aWait : Boolean = False );
 begin
   if not Setting_Fade then
   begin

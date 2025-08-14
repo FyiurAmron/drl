@@ -114,7 +114,7 @@ type TDRLIO = class( TIO )
 
   // Fade control
   procedure FadeIn( aForce : Boolean = False ); virtual;
-  procedure FadeOut( aTime : Single = 0.5; aWait : Boolean = False ); virtual;
+  procedure FadeOut( aTime : Single = 0.1; aWait : Boolean = False ); virtual;
   procedure FadeReset; virtual;
   procedure FadeWait; virtual;
 
@@ -547,7 +547,7 @@ begin
   // noop
 end;
 
-procedure TDRLIO.FadeOut( aTime : Single = 0.5; aWait : Boolean = False );
+procedure TDRLIO.FadeOut( aTime : Single = 0.1; aWait : Boolean = False );
 begin
   // noop
 end;
@@ -1387,7 +1387,7 @@ function lua_ui_save_and_quit(L: Plua_State): Integer; cdecl;
 var iState : TDRLLuaState;
 begin
   iState.Init(L);
-  IO.FadeOut(0.5);
+  IO.FadeOut();
   DRL.SetState( DSSaving );
   Result := 0;
 end;

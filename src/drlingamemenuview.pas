@@ -76,7 +76,7 @@ begin
   if VTIG_Selectable( 'Save & Quit' ) then
   begin
     FFinished := True;
-    IO.FadeOut(0.5);
+    IO.FadeOut();
     DRL.SetState( DSSaving );
   end;
   VTIG_End;
@@ -108,7 +108,7 @@ end;
 
 procedure TAbandonView.OnConfirm;
 begin
-  IO.FadeOut(0.5);
+  IO.FadeOut();
   DRL.SetState( DSQuit );
   Player.Score := -100000;
 end;
